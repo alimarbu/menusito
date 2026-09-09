@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/styles.css">
+<script src="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:hsl(var(--muted));-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-appearance:none}
+a{color:hsl(var(--brand));text-decoration:none}
+a:hover{color:hsl(var(--brand));text-decoration:underline}
+@keyframes sheetUp{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</helmet>
+<div style="max-width:430px;margin:0 auto;min-height:100vh;background:hsl(var(--background));box-shadow:0 0 0 1px hsl(var(--border));padding-bottom:104px;font-family:ui-sans-serif,system-ui,sans-serif;color:hsl(var(--foreground));text-wrap:pretty">
+
+<sc-if value="{{ isHoy }}" hint-placeholder-val="{{ true }}">
+<div>
+  <div style="position:sticky;top:0;z-index:6;background:hsl(var(--background));border-bottom:1px solid hsl(var(--border));padding:16px 16px 13px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ prevDay }}" aria-label="Día anterior" style="width:38px;height:38px;flex:none;border-radius:12px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:16px;line-height:1;color:hsl(var(--muted-foreground))">‹</button>
+      <div style="flex:1;text-align:center;min-width:0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(var(--brand))">{{ dateEyebrow }}</div>
+        <div style="font-size:17px;font-weight:650;letter-spacing:-.015em;margin-top:3px">{{ dateMain }}</div>
+      </div>
+      <button onClick="{{ nextDay }}" aria-label="Día siguiente" style="width:38px;height:38px;flex:none;border-radius:12px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:16px;line-height:1;color:hsl(var(--muted-foreground))">›</button>
+    </div>
+    <sc-if value="{{ notToday }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;justify-content:center;margin-top:10px">
+        <button onClick="{{ goToday }}" style="border:none;background:hsl(var(--muted));border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;color:hsl(var(--muted-foreground))">Volver a hoy</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="margin:16px 16px 0;background:{{ primary.bg }};border:1px solid {{ primary.border }};border-radius:22px;padding:20px 20px 18px;box-shadow:0 1px 3px rgba(40,20,20,.04)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--brand));padding-top:5px">{{ primary.eyebrow }}</div>
+      <button onClick="{{ primary.onOptions }}" style="width:34px;height:34px;flex:none;border-radius:11px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:15px;line-height:1;color:hsl(var(--muted-foreground))">⋯</button>
+    </div>
+    <div style="margin-top:10px;font-size:31px;line-height:1.06;font-weight:680;letter-spacing:-.025em;text-decoration:{{ primary.deco }};opacity:{{ primary.dim }}">{{ primary.dish }}</div>
+    <sc-if value="{{ primary.hasSide }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:7px;font-size:15.5px;color:hsl(var(--muted-foreground))">+ {{ primary.side }}</div>
+    </sc-if>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+      <sc-if value="{{ primary.isAlt }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:11.5px;font-weight:650;padding:5px 10px;border-radius:999px;background:hsl(var(--muted));color:hsl(var(--muted-foreground))">↺ Alternativa</span>
+      </sc-if>
+      <sc-if value="{{ primary.eaten }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:11.5px;font-weight:650;padding:5px 10px;border-radius:999px;background:#eef2e8;color:#415136">✓ {{ primary.doneWord }}</span>
+      </sc-if>
+      <sc-if value="{{ primary.skipped }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:11.5px;font-weight:650;padding:5px 10px;border-radius:999px;background:hsl(var(--muted));color:hsl(var(--muted-foreground))">Saltada</span>
+      </sc-if>
+    </div>
+    <sc-if value="{{ primary.made }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:7px;font-size:14.5px">
+        <div style="display:flex;gap:8px;align-items:center"><span>🏠</span><span style="font-weight:600">Nos lo hacen</span></div>
+        <div style="display:flex;gap:8px;align-items:center;color:hsl(var(--muted-foreground))"><span>✅</span><span>No hay que comprar ingredientes</span></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ primary.hasIng }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Necesitas</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">
+          <sc-for list="{{ primary.ing }}" as="ing" hint-placeholder-count="3">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:550;padding:6px 11px;border-radius:999px;background:{{ ing.bg }};color:{{ ing.fg }};border:1px solid {{ ing.bd }}">{{ ing.glyph }} {{ ing.name }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ primary.hasMiss }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ primary.onGoShop }}" style="width:100%;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;padding:13px 14px;border-radius:14px;border:1px solid hsl(var(--accent)/.55);background:hsl(var(--accent)/.13)">
+        <span style="font-size:14px;font-weight:650">{{ primary.missLabel }}</span>
+        <span style="font-size:12.5px;font-weight:600;color:hsl(var(--muted-foreground))">Ver compra →</span>
+      </button>
+    </sc-if>
+    <div style="margin-top:20px">
+      <sc-if value="{{ primary.pendingComida }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">✓ Ya hemos comido</x-import>
+      </sc-if>
+      <sc-if value="{{ primary.pendingCena }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">✓ Ya hemos cenado</x-import>
+      </sc-if>
+      <sc-if value="{{ primary.eaten }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">Deshacer</x-import>
+      </sc-if>
+      <sc-if value="{{ primary.skipped }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ primary.onSkip }}" class-name="w-full" hint-size="100%,44px">↺ Retomar</x-import>
+      </sc-if>
+    </div>
+  </div>
+
+  <button onClick="{{ toggleSecondary }}" style="width:100%;margin-top:12px;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:none;border-top:1px solid hsl(var(--border));border-bottom:1px solid hsl(var(--border));background:hsl(var(--background))">
+    <span style="min-width:0">
+      <span style="display:block;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ secondary.teaserLabel }}</span>
+      <span style="display:block;font-size:15px;font-weight:600;margin-top:4px;letter-spacing:-.01em">{{ secondary.full }}</span>
+    </span>
+    <span style="flex:none;font-size:13px;color:hsl(var(--muted-foreground))">{{ secondary.chevron }}</span>
+  </button>
+
+  <sc-if value="{{ secondaryOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:14px 16px 0;background:{{ secondary.bg }};border:1px solid {{ secondary.border }};border-radius:18px;padding:17px;animation:slideDown .2s ease">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground));padding-top:4px">{{ secondary.eyebrow }}</div>
+        <button onClick="{{ secondary.onOptions }}" style="width:32px;height:32px;flex:none;border-radius:10px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:14px;line-height:1;color:hsl(var(--muted-foreground))">⋯</button>
+      </div>
+      <div style="margin-top:8px;font-size:22px;line-height:1.12;font-weight:660;letter-spacing:-.02em;text-decoration:{{ secondary.deco }};opacity:{{ secondary.dim }}">{{ secondary.dish }}</div>
+      <sc-if value="{{ secondary.hasSide }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:5px;font-size:14px;color:hsl(var(--muted-foreground))">+ {{ secondary.side }}</div>
+      </sc-if>
+      <sc-if value="{{ secondary.made }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:12px;font-size:14px;display:flex;gap:8px;align-items:center"><span>🏠</span><span style="font-weight:600">Nos lo hacen</span></div>
+      </sc-if>
+      <sc-if value="{{ secondary.hasIng }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:13px">
+          <sc-for list="{{ secondary.ing }}" as="ing" hint-placeholder-count="2">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:550;padding:5px 10px;border-radius:999px;background:{{ ing.bg }};color:{{ ing.fg }};border:1px solid {{ ing.bd }}">{{ ing.glyph }} {{ ing.name }}</span>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ secondary.hasMiss }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ secondary.onGoShop }}" style="width:100%;margin-top:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;padding:11px 13px;border-radius:12px;border:1px solid hsl(var(--accent)/.55);background:hsl(var(--accent)/.13)">
+          <span style="font-size:13px;font-weight:650">{{ secondary.missLabel }}</span>
+          <span style="font-size:12px;font-weight:600;color:hsl(var(--muted-foreground))">→</span>
+        </button>
+      </sc-if>
+      <div style="margin-top:16px">
+        <sc-if value="{{ secondary.pendingComida }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">✓ Comido</x-import>
+        </sc-if>
+        <sc-if value="{{ secondary.pendingCena }}" hint-placeholder-val="{{ true }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">✓ Cenado</x-import>
+        </sc-if>
+        <sc-if value="{{ secondary.eaten }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">Deshacer</x-import>
+        </sc-if>
+        <sc-if value="{{ secondary.skipped }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onSkip }}" class-name="w-full" hint-size="100%,42px">↺ Retomar</x-import>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showBreakfast }}" hint-placeholder-val="{{ true }}">
+    <div style="margin:22px 20px 0;display:flex;gap:22px;font-size:12.5px;color:hsl(var(--muted-foreground))">
+      <div><span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75">Desayuno</span><span style="display:block;margin-top:3px">Café + pitufo</span></div>
+      <div><span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75">Media mañana</span><span style="display:block;margin-top:3px">Fruta</span></div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSemana }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="position:sticky;top:0;z-index:6;background:hsl(var(--background));border-bottom:1px solid hsl(var(--border));padding:18px 20px 14px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(var(--brand))">Menú</div>
+    <div style="font-size:21px;font-weight:680;letter-spacing:-.02em;margin-top:3px">La semana</div>
+    <div style="font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:4px">Pulsa un día para ver todo lo que toca.</div>
+  </div>
+  <div style="padding:14px 16px 0;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+      <div style="border:1px solid {{ d.border }};border-radius:18px;background:{{ d.bg }};overflow:hidden">
+        <button onClick="{{ d.onToggle }}" style="width:100%;border:none;background:transparent;padding:15px 16px;display:flex;align-items:center;gap:12px;text-align:left">
+          <span style="flex:1;min-width:0">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">{{ d.name }}</span>
+              <span style="font-size:11px;font-weight:650;color:{{ d.tagColor }}">{{ d.tag }}</span>
+            </span>
+            <span style="display:block;font-size:14.5px;color:hsl(var(--muted-foreground));margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.summary }}</span>
+          </span>
+          <span style="flex:none;font-size:12px;color:hsl(var(--muted-foreground))">{{ d.chevron }}</span>
+        </button>
+        <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:2px 16px 16px;animation:slideDown .18s ease">
+            <div style="height:1px;background:hsl(var(--border));margin:0 0 14px"></div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <sc-if value="{{ showBreakfast }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:12px">
+                  <div style="flex:1"><div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Desayuno</div><div style="font-size:14px;margin-top:3px">Café + pitufo</div></div>
+                  <div style="flex:1"><div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Media mañana</div><div style="font-size:14px;margin-top:3px">Fruta</div></div>
+                </div>
+              </sc-if>
+              <div>
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">🍽️ Comida</div>
+                <div style="font-size:15.5px;font-weight:600;margin-top:4px;letter-spacing:-.01em;text-decoration:{{ d.comida.deco }};opacity:{{ d.comida.dim }}">{{ d.comida.full }}</div>
+                <div style="font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:4px">{{ d.comida.note }}</div>
+              </div>
+              <div>
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">🌙 Cena</div>
+                <div style="font-size:15.5px;font-weight:600;margin-top:4px;letter-spacing:-.01em;text-decoration:{{ d.cena.deco }};opacity:{{ d.cena.dim }}">{{ d.cena.full }}</div>
+                <div style="font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:4px">{{ d.cena.note }}</div>
+                <sc-if value="{{ d.cena.hasAlt }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ d.cena.onAlt }}" style="width:100%;margin-top:10px;text-align:left;padding:11px 13px;border-radius:12px;border:1px solid hsl(var(--border));background:hsl(var(--muted)/.6)">
+                    <span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ d.cena.altLabel }}</span>
+                    <span style="display:block;font-size:14px;font-weight:600;margin-top:4px">{{ d.cena.altDish }}</span>
+                  </button>
+                </sc-if>
+              </div>
+              <button onClick="{{ d.onOpenDay }}" style="align-self:flex-start;border:none;background:transparent;padding:2px 0;font-size:13px;font-weight:650;color:hsl(var(--brand))">Abrir este día →</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCompra }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="position:sticky;top:0;z-index:6;background:hsl(var(--background));border-bottom:1px solid hsl(var(--border));padding:18px 20px 15px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(var(--brand))">🛒 Compra semanal</div>
+    <div style="margin-top:10px">
+      <x-import component-from-global-scope="MoicroSocialUI.Progress" value="{{ shop.pct }}" label="{{ shop.countLabel }}" hint-size="100%,30px"></x-import>
+    </div>
+  </div>
+  <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:20px">
+    <sc-for list="{{ shop.cats }}" as="cat" hint-placeholder-count="5">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 4px 8px">
+          <span style="font-size:14px">{{ cat.icon }}</span>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">{{ cat.cat }}</span>
+          <span style="font-size:11px;color:hsl(var(--muted-foreground))">{{ cat.count }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ cat.items }}" as="it" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:14px;border:1px solid {{ it.bd }};background:{{ it.bg }};box-shadow:{{ it.ring }}">
+              <button onClick="{{ it.onTap }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:11px;border:none;background:transparent;padding:2px 0;text-align:left">
+                <span style="width:26px;height:26px;flex:none;border-radius:9px;border:1px solid {{ it.dotBd }};background:{{ it.dotBg }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ it.dotFg }}">{{ it.glyph }}</span>
+                <span style="min-width:0">
+                  <span style="display:block;font-size:14.5px;font-weight:600;letter-spacing:-.01em;text-decoration:{{ it.deco }};color:{{ it.fg }}">{{ it.name }}</span>
+                  <span style="display:block;font-size:12px;color:hsl(var(--muted-foreground));margin-top:2px">{{ it.meta }}</span>
+                </span>
+              </button>
+              <sc-if value="{{ it.removable }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ it.onRemove }}" aria-label="Quitar" style="width:28px;height:28px;flex:none;border-radius:9px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">×</button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+
+    <div>
+      <div style="padding:0 4px 8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">➕ Añadir producto</div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="flex:1">
+          <x-import component-from-global-scope="MoicroSocialUI.Input" value="{{ shop.newItem }}" on-change="{{ shop.onNewItem }}" on-key-down="{{ shop.onNewItemKey }}" placeholder="Servilletas, aceite…" hint-size="100%,42px"></x-import>
+        </div>
+        <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ shop.onAdd }}" hint-size="auto,42px">Añadir</x-import>
+      </div>
+    </div>
+
+    <sc-if value="{{ shop.hasBought }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 4px 8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#415136">✅ Ya comprado</span>
+          <span style="font-size:11px;color:hsl(var(--muted-foreground))">{{ shop.boughtCount }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ shop.bought }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.onTap }}" style="display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:14px;border:1px solid #dbe3d2;background:#f6f8f2;text-align:left">
+              <span style="width:24px;height:24px;flex:none;border-radius:8px;background:#5c7049;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">✓</span>
+              <span style="min-width:0;flex:1">
+                <span style="display:block;font-size:14px;font-weight:550;text-decoration:line-through;color:#5b6b51">{{ it.name }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="padding:6px 4px 0">
+      <div style="font-size:12px;color:hsl(var(--muted-foreground));line-height:1.5">{{ shop.hint }}</div>
+      <button onClick="{{ askReset }}" style="margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:14px;font-weight:600;color:hsl(var(--muted-foreground))">↻ Reiniciar semana</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPrep }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="position:sticky;top:0;z-index:6;background:hsl(var(--background));border-bottom:1px solid hsl(var(--border));padding:18px 20px 14px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(var(--brand))">👩‍🍳 Preparar</div>
+    <div style="font-size:21px;font-weight:680;letter-spacing:-.02em;margin-top:3px">{{ prep.headline }}</div>
+  </div>
+  <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:22px">
+    <div>
+      <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">Hoy</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ prep.today }}" as="t" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;border:1px solid {{ t.bd }};background:{{ t.bg }}">
+            <button onClick="{{ t.onToggle }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:11px;border:none;background:transparent;padding:2px 0;text-align:left">
+              <span style="width:24px;height:24px;flex:none;border-radius:8px;border:1px solid {{ t.dotBd }};background:{{ t.dotBg }};color:{{ t.dotFg }};display:flex;align-items:center;justify-content:center;font-size:12px">{{ t.glyph }}</span>
+              <span style="font-size:14.5px;font-weight:550;text-decoration:{{ t.deco }};color:{{ t.fg }}">{{ t.label }}</span>
+            </button>
+            <sc-if value="{{ t.removable }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ t.onRemove }}" aria-label="Quitar tarea" style="width:28px;height:28px;flex:none;border-radius:9px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">×</button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ prep.todayEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 14px;border-radius:14px;border:1px dashed hsl(var(--border));font-size:14px;color:hsl(var(--muted-foreground))">Hoy no hay nada que preparar. 🙌</div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;margin-top:10px">
+        <div style="flex:1">
+          <x-import component-from-global-scope="MoicroSocialUI.Input" value="{{ prep.newTask }}" on-change="{{ prep.onNewTask }}" on-key-down="{{ prep.onNewTaskKey }}" placeholder="+ Añadir tarea" hint-size="100%,42px"></x-import>
+        </div>
+        <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ prep.onAdd }}" hint-size="auto,42px">Añadir</x-import>
+      </div>
+    </div>
+
+    <sc-if value="{{ prep.hasRest }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Resto de la semana</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ prep.rest }}" as="g" hint-placeholder-count="3">
+            <div>
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:hsl(var(--muted-foreground));padding:0 4px 6px">{{ g.day }}</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <sc-for list="{{ g.tasks }}" as="t" hint-placeholder-count="2">
+                  <button onClick="{{ t.onToggle }}" style="display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:14px;border:1px solid {{ t.bd }};background:{{ t.bg }};text-align:left">
+                    <span style="width:22px;height:22px;flex:none;border-radius:7px;border:1px solid {{ t.dotBd }};background:{{ t.dotBg }};color:{{ t.dotFg }};display:flex;align-items:center;justify-content:center;font-size:11px">{{ t.glyph }}</span>
+                    <span style="font-size:14px;text-decoration:{{ t.deco }};color:{{ t.fg }}">{{ t.label }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<nav style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:8px 8px 14px;background:hsl(var(--background)/.94);backdrop-filter:blur(14px);border-top:1px solid hsl(var(--border));z-index:20">
+  <button onClick="{{ goHoy }}" style="border:none;background:{{ nav.hoyBg }};border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.hoyFg }}">
+    <span style="font-size:17px;line-height:1">🏠</span><span style="font-size:10.5px;font-weight:650;letter-spacing:.02em">Hoy</span>
+  </button>
+  <button onClick="{{ goSemana }}" style="border:none;background:{{ nav.semanaBg }};border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.semanaFg }}">
+    <span style="font-size:17px;line-height:1">📅</span><span style="font-size:10.5px;font-weight:650;letter-spacing:.02em">Semana</span>
+  </button>
+  <button onClick="{{ goCompra }}" style="border:none;background:{{ nav.compraBg }};border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.compraFg }};position:relative">
+    <span style="font-size:17px;line-height:1">🛒</span><span style="font-size:10.5px;font-weight:650;letter-spacing:.02em">Compra</span>
+    <sc-if value="{{ nav.hasPend }}" hint-placeholder-val="{{ true }}">
+      <span style="position:absolute;top:6px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:hsl(var(--brand));color:hsl(var(--brand-foreground));font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ nav.pend }}</span>
+    </sc-if>
+  </button>
+  <button onClick="{{ goPrep }}" style="border:none;background:{{ nav.prepBg }};border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.prepFg }}">
+    <span style="font-size:17px;line-height:1">👩‍🍳</span><span style="font-size:10.5px;font-weight:650;letter-spacing:.02em">Preparar</span>
+  </button>
+</nav>
+
+<sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div onClick="{{ closeSheet }}" style="position:fixed;inset:0;background:rgba(30,14,16,.38);z-index:40;animation:fadeIn .18s ease"></div>
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:hsl(var(--background));border-radius:24px 24px 0 0;padding:10px 14px 20px;z-index:41;animation:sheetUp .22s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:38px;height:4px;border-radius:2px;background:hsl(var(--border));margin:4px auto 14px"></div>
+    <div style="padding:0 6px 10px;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ sheet.title }}</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <sc-for list="{{ sheet.actions }}" as="opt" hint-placeholder-count="3">
+        <button onClick="{{ opt.onClick }}" style="text-align:left;padding:15px 15px;border-radius:15px;border:1px solid hsl(var(--border));background:hsl(var(--background));color:{{ opt.color }}">
+          <span style="display:block;font-size:15px;font-weight:600">{{ opt.label }}</span>
+          <span style="display:block;font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:3px">{{ opt.note }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <button onClick="{{ closeSheet }}" style="width:100%;margin-top:10px;padding:14px;border-radius:15px;border:none;background:hsl(var(--muted));font-size:14.5px;font-weight:600;color:hsl(var(--muted-foreground))">Cancelar</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ resetAsk }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div onClick="{{ cancelReset }}" style="position:fixed;inset:0;background:rgba(30,14,16,.38);z-index:50;animation:fadeIn .18s ease"></div>
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 40px));background:hsl(var(--background));border:1px solid hsl(var(--border));border-radius:20px;padding:22px;z-index:51">
+    <div style="font-size:17px;font-weight:680;letter-spacing:-.01em">¿Reiniciar la semana?</div>
+    <div style="font-size:14px;color:hsl(var(--muted-foreground));margin-top:8px;line-height:1.5">Se borran los checks de la compra, las comidas marcadas y las tareas hechas. El menú y los productos añadidos se quedan.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:20px">
+      <button onClick="{{ doReset }}" style="width:100%;padding:13px;border-radius:12px;border:none;background:hsl(var(--destructive));color:hsl(var(--destructive-foreground));font-size:14.5px;font-weight:650">Borrar los checks</button>
+      <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ cancelReset }}" class-name="w-full" hint-size="100%,42px">Cancelar</x-import>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;protagonista&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;comida&quot;,&quot;cena&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;'auto' | 'comida' | 'cena'&quot;,&quot;section&quot;:&quot;Comportamiento&quot;},&quot;mostrarDesayuno&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamiento&quot;},&quot;cicloCompra&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comprar → Ya tenemos → Comprado&quot;,&quot;Comprar → Comprado&quot;],&quot;default&quot;:&quot;Comprar → Ya tenemos → Comprado&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Compra&quot;}}">
+class Component extends DCLogic {
+  DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  SHOP = [
+    {cat:'Carne y pescado', icon:'🥩', items:[
+      {id:'pollo',name:'Pollo',qty:'aprox. 1 kg'},
+      {id:'pinchitos',name:'Pinchitos de cerdo',qty:'500–600 g'},
+      {id:'hamburguesas',name:'Hamburguesas',qty:'2'},
+      {id:'rosada',name:'Rosada',qty:'400–500 g'},
+      {id:'pescado',name:'Pescado para horno',qty:'500–600 g'}]},
+    {cat:'Huevos y lácteos', icon:'🥚', items:[
+      {id:'huevos',name:'Huevos',qty:'10–12'},
+      {id:'yogures',name:'Yogures proteicos',qty:'6'},
+      {id:'queso',name:'Mozzarella o queso rallado',qty:'150–200 g'}]},
+    {cat:'Verdura', icon:'🥬', items:[
+      {id:'calabacines',name:'Calabacines',qty:'4–5'},
+      {id:'calabaza',name:'Calabaza',qty:'700 g – 1 kg'},
+      {id:'patatas',name:'Patatas',qty:'1,5 kg'},
+      {id:'cebollas',name:'Cebollas',qty:'4'},
+      {id:'pimientos',name:'Pimientos',qty:'3'},
+      {id:'tomates',name:'Tomates',qty:'5–6'},
+      {id:'ensalada',name:'Ensalada o lechuga',qty:'1 bolsa'},
+      {id:'champis',name:'Champiñones',qty:'1 bandeja'},
+      {id:'verdura',name:'Verdura de acompañamiento',qty:''},
+      {id:'ajo',name:'Ajo',qty:''}]},
+    {cat:'Fruta', icon:'🍌', items:[
+      {id:'platanos',name:'Plátanos',qty:'4'},
+      {id:'manzanas',name:'Manzanas',qty:'4'},
+      {id:'mandarinas',name:'Mandarinas o naranjas',qty:'4'},
+      {id:'peras',name:'Peras',qty:'2'}]},
+    {cat:'Pan y despensa', icon:'🍞', items:[
+      {id:'pitufos',name:'Pan / pitufos de desayuno',qty:''},
+      {id:'panint',name:'Pan integral',qty:''},
+      {id:'panham',name:'Panes de hamburguesa',qty:'2'},
+      {id:'pizzabase',name:'Base para pizza',qty:''},
+      {id:'triturado',name:'Tomate triturado',qty:''},
+      {id:'atun',name:'Atún',qty:'2 latas'},
+      {id:'cafe',name:'Café',qty:''}]}
+  ];
+
+  MENU = [
+    {comida:{dish:'Sopa de verduras',side:'Yogur proteico',made:true},
+     cena:{dish:'Pinchito de cerdo',side:'Pan integral',ing:['pinchitos','panint'],
+       alt:{dish:'Crema de verduras',side:'Tortilla francesa con atún',ing:['calabacines','huevos','atun']}},
+     prep:['Sacar los pinchitos del congelador']},
+    {comida:{dish:'Lentejas',side:'Yogur proteico',made:true},
+     cena:{dish:'Tortilla francesa',side:'Verdura + pollo a la plancha',ing:['huevos','verdura','pollo'],
+       alt:{dish:'Crema de verduras',side:'Rosada',ing:['calabacines','rosada']}},
+     prep:['Sacar el pollo del congelador','Lavar y trocear la verdura']},
+    {comida:{dish:'Puchero',side:'Yogur proteico',made:true},
+     cena:{dish:'Pinchito',side:'',ing:['pinchitos'],
+       alt:{dish:'Crema de verduras',side:'Pollo a la plancha',ing:['calabacines','pollo']}},
+     prep:['Sacar el pinchito del congelador']},
+    {comida:{dish:'Crema de calabaza',side:'Pollo al horno',ing:['calabaza','cebollas','pollo','patatas']},
+     cena:{dish:'Tortilla francesa',side:'Verduras',ing:['huevos','verdura']},
+     prep:['Pelar y trocear la calabaza','Sacar el pollo del congelador']},
+    {comida:{dish:'Pizza sana',side:'',ing:['pizzabase','triturado','queso','champis','pimientos']},
+     cena:{dish:'Crema de calabacín',side:'Rosada',ing:['calabacines','rosada']},
+     prep:['Descongelar la rosada','Rallar el queso para la pizza']},
+    {comida:{dish:'Hamburguesa',side:'Ensalada',ing:['hamburguesas','panham','ensalada','tomates']},
+     cena:{dish:'Picoteo',side:'',ing:[]},
+     prep:['Sacar las hamburguesas del congelador','Lavar la ensalada']},
+    {comida:{dish:'Pescado al horno',side:'Patatas + verduras',ing:['pescado','patatas','verdura','cebollas']},
+     cena:{dish:'Pollo a la plancha',side:'Crema de verduras',ing:['pollo','calabacines']},
+     prep:['Descongelar el pescado','Pelar las patatas']}
+  ];
+
+  KEY = 'menuSemanal.v1';
+  SAGE = '#5c7049';
+  SAGE_INK = '#415136';
+  SAGE_BG = '#f6f8f2';
+  SAGE_BD = '#dbe3d2';
+
+  state = {view:'hoy', offset:0, secondaryOpen:false, openDay:null, sheet:null, resetAsk:false,
+    newItem:'', newTask:'', eaten:{}, skipped:{}, useAlt:{}, shop:{}, tasks:{}, extraItems:[], extraTasks:[], focus:[]};
+
+  componentDidMount(){
+    try{
+      const raw = localStorage.getItem(this.KEY);
+      if(raw){
+        const d = JSON.parse(raw);
+        this.setState({eaten:d.eaten||{}, skipped:d.skipped||{}, useAlt:d.useAlt||{}, shop:d.shop||{},
+          tasks:d.tasks||{}, extraItems:d.extraItems||[], extraTasks:d.extraTasks||[]});
+      }
+    }catch(e){}
+    this.tick = setInterval(()=>this.forceUpdate(), 60000);
+  }
+  componentWillUnmount(){ if(this.tick) clearInterval(this.tick); }
+  componentDidUpdate(){ this.save(); }
+  save(){
+    const s = this.state;
+    try{ localStorage.setItem(this.KEY, JSON.stringify({eaten:s.eaten, skipped:s.skipped, useAlt:s.useAlt,
+      shop:s.shop, tasks:s.tasks, extraItems:s.extraItems, extraTasks:s.extraTasks})); }catch(e){}
+  }
+
+  allItems(){
+    const out = [];
+    this.SHOP.forEach(c=>c.items.forEach(i=>out.push(Object.assign({}, i, {cat:c.cat}))));
+    this.state.extraItems.forEach(i=>out.push(Object.assign({}, i, {cat:'Añadidos', extra:true})));
+    return out;
+  }
+  itemState(id){ return this.state.shop[id] || 'buy'; }
+  itemName(id){ const it = this.allItems().find(i=>i.id===id); return it ? it.name : id; }
+  nextState(st){
+    if(this.props.cicloCompra === 'Comprar → Comprado') return st==='done' ? 'buy' : 'done';
+    return st==='buy' ? 'done' : st==='done' ? 'have' : 'buy';
+  }
+  setItem(id, st){ this.setState(s=>({shop:Object.assign({}, s.shop, {[id]:st})})); }
+  tapItem(id){ this.setItem(id, this.nextState(this.itemState(id))); }
+
+  meal(di, slot){
+    const base = this.MENU[di][slot];
+    const isAlt = !!this.state.useAlt[di+'-'+slot] && !!base.alt;
+    const m = isAlt ? base.alt : base;
+    const full = m.dish + (m.side ? ' + ' + m.side : '');
+    return {dish:m.dish, side:m.side||'', hasSide:!!m.side, made:!!m.made, ing:m.made?[]:(m.ing||[]),
+      isAlt:isAlt, hasAlt:!!base.alt, full:full,
+      altFull: base.alt ? (isAlt ? base.dish + (base.side?' + '+base.side:'') : base.alt.dish + (base.alt.side?' + '+base.alt.side:'')) : ''};
+  }
+
+  card(di, slot, big){
+    const m = this.meal(di, slot);
+    const key = di+'-'+slot;
+    const eaten = !!this.state.eaten[key];
+    const skipped = !!this.state.skipped[key];
+    const ing = m.ing.map(id=>{
+      const ok = this.itemState(id) !== 'buy';
+      return {name:this.itemName(id), glyph: ok?'✅':'⚠️',
+        bg: ok? this.SAGE_BG : 'hsl(var(--accent)/.13)', fg: ok? this.SAGE_INK : '#6b4212',
+        bd: ok? this.SAGE_BD : 'hsl(var(--accent)/.5)'};
+    });
+    const miss = m.ing.filter(id=>this.itemState(id)==='buy');
+    return {
+      eyebrow: slot==='comida' ? (big ? '🍽️ Comida de hoy' : '🍽️ Comida') : (big ? '🌙 Cena de hoy' : '🌙 Cena'),
+      teaserLabel: slot==='cena' ? 'Esta noche' : 'Al mediodía',
+      doneWord: slot==='comida' ? 'Comido' : 'Cenado',
+      dish:m.dish, side:m.side, hasSide:m.hasSide, full:m.full, made:m.made, isAlt:m.isAlt,
+      ing:ing, hasIng: ing.length>0,
+      hasMiss: miss.length>0,
+      missLabel: miss.length===1 ? '⚠️ Te falta 1 ingrediente' : '⚠️ Te faltan '+miss.length+' ingredientes',
+      eaten:eaten, skipped:skipped,
+      pendingComida: !eaten && !skipped && slot==='comida',
+      pendingCena: !eaten && !skipped && slot==='cena',
+      deco: skipped ? 'line-through' : 'none',
+      dim: (eaten || skipped) ? '.5' : '1',
+      bg: eaten ? this.SAGE_BG : 'hsl(var(--background))',
+      border: eaten ? this.SAGE_BD : 'hsl(var(--border))',
+      chevron: this.state.secondaryOpen ? '▲' : '▼',
+      onEat: ()=>this.toggleEaten(di, slot),
+      onSkip: ()=>this.toggleSkip(di, slot),
+      onOptions: ()=>this.setState({sheet:{di:di, slot:slot}}),
+      onGoShop: ()=>this.setState({view:'compra', focus:miss.slice(), sheet:null})
+    };
+  }
+
+  toggleEaten(di, slot){
+    const k = di+'-'+slot;
+    this.setState(s=>{
+      const e = Object.assign({}, s.eaten); const sk = Object.assign({}, s.skipped);
+      if(e[k]) delete e[k]; else { e[k] = true; delete sk[k]; }
+      return {eaten:e, skipped:sk, sheet:null};
+    });
+  }
+  toggleSkip(di, slot){
+    const k = di+'-'+slot;
+    this.setState(s=>{
+      const sk = Object.assign({}, s.skipped); const e = Object.assign({}, s.eaten);
+      if(sk[k]) delete sk[k]; else { sk[k] = true; delete e[k]; }
+      return {skipped:sk, eaten:e, sheet:null};
+    });
+  }
+  toggleAlt(di, slot){
+    const k = di+'-'+slot;
+    this.setState(s=>{
+      const a = Object.assign({}, s.useAlt);
+      if(a[k]) delete a[k]; else a[k] = true;
+      return {useAlt:a, sheet:null};
+    });
+  }
+  toggleTask(k){
+    this.setState(s=>{
+      const t = Object.assign({}, s.tasks);
+      if(t[k]) delete t[k]; else t[k] = true;
+      return {tasks:t};
+    });
+  }
+
+  addItem(){
+    const name = (this.state.newItem||'').trim();
+    if(!name) return;
+    const id = 'x'+Date.now();
+    this.setState(s=>({extraItems:s.extraItems.concat([{id:id, name:name, qty:''}]), newItem:''}));
+  }
+  removeItem(id){
+    this.setState(s=>{
+      const shop = Object.assign({}, s.shop); delete shop[id];
+      return {extraItems:s.extraItems.filter(i=>i.id!==id), shop:shop};
+    });
+  }
+  addTask(){
+    const label = (this.state.newTask||'').trim();
+    if(!label) return;
+    const id = 't'+Date.now();
+    this.setState(s=>({extraTasks:s.extraTasks.concat([{id:id, label:label}]), newTask:''}));
+  }
+  removeTask(id){
+    this.setState(s=>{
+      const t = Object.assign({}, s.tasks); delete t['x-'+id];
+      return {extraTasks:s.extraTasks.filter(x=>x.id!==id), tasks:t};
+    });
+  }
+
+  taskRow(key, label, done, onRemove){
+    return {label:label, glyph: done?'✓':'', done:done,
+      bg: done? this.SAGE_BG : 'hsl(var(--background))',
+      bd: done? this.SAGE_BD : 'hsl(var(--border))',
+      dotBg: done? this.SAGE : 'hsl(var(--background))',
+      dotBd: done? this.SAGE : 'hsl(var(--border))',
+      dotFg: '#fff',
+      deco: done? 'line-through' : 'none',
+      fg: done? '#5b6b51' : 'hsl(var(--foreground))',
+      removable: !!onRemove, onRemove: onRemove || null,
+      onToggle: ()=>this.toggleTask(key)};
+  }
+
+  renderVals(){
+    const s = this.state;
+    const now = new Date();
+    const sel = new Date(now.getFullYear(), now.getMonth(), now.getDate() + s.offset);
+    const di = (sel.getDay()+6)%7;
+    const todayIdx = (now.getDay()+6)%7;
+    const showBreakfast = this.props.mostrarDesayuno !== false;
+    const pref = this.props.protagonista || 'auto';
+    const evening = pref==='cena' || (pref==='auto' && s.offset===0 && (now.getHours()>=17 || now.getHours()<5));
+    const pSlot = evening ? 'cena' : 'comida';
+    const sSlot = evening ? 'comida' : 'cena';
+
+    const items = this.allItems();
+    const ready = items.filter(i=>this.itemState(i.id)!=='buy').length;
+    const pend = items.length - ready;
+    const pct = items.length ? Math.round(ready*100/items.length) : 0;
+
+    const mkShopRow = (it)=>{
+      const st = this.itemState(it.id);
+      const done = st==='done', have = st==='have';
+      const focused = s.focus.indexOf(it.id) >= 0 && st==='buy';
+      return {name:it.name, id:it.id,
+        meta: have ? ('🏠 Ya lo tenemos' + (it.qty? ' · '+it.qty : '')) : (it.qty || ''),
+        glyph: done ? '✓' : have ? '🏠' : '',
+        bg: done? this.SAGE_BG : have? 'hsl(var(--muted)/.6)' : 'hsl(var(--background))',
+        bd: focused ? 'hsl(var(--brand))' : done? this.SAGE_BD : 'hsl(var(--border))',
+        ring: focused ? '0 0 0 3px hsl(var(--brand)/.14)' : 'none',
+        dotBg: done? this.SAGE : 'hsl(var(--background))',
+        dotBd: done? this.SAGE : 'hsl(var(--border))',
+        dotFg: done? '#fff' : 'hsl(var(--muted-foreground))',
+        deco: done? 'line-through' : 'none',
+        fg: done? '#5b6b51' : 'hsl(var(--foreground))',
+        removable: !!it.extra, onRemove: it.extra ? ()=>this.removeItem(it.id) : null,
+        onTap: ()=>this.tapItem(it.id)};
+    };
+
+    const cats = [];
+    this.SHOP.forEach(c=>{
+      const rows = c.items.filter(i=>this.itemState(i.id)!=='done').map(mkShopRow);
+      if(rows.length) cats.push({cat:c.cat, icon:c.icon, count:rows.length+'', items:rows});
+    });
+    const extras = s.extraItems.filter(i=>this.itemState(i.id)!=='done').map(i=>mkShopRow(Object.assign({}, i, {extra:true})));
+    if(extras.length) cats.push({cat:'Añadidos', icon:'✍️', count:extras.length+'', items:extras});
+    const bought = items.filter(i=>this.itemState(i.id)==='done').map(mkShopRow);
+
+    const week = this.MENU.map((_, i)=>{
+      const c = this.meal(i,'comida'), n = this.meal(i,'cena');
+      const cEaten = !!s.eaten[i+'-comida'], cSkip = !!s.skipped[i+'-comida'];
+      const nEaten = !!s.eaten[i+'-cena'], nSkip = !!s.skipped[i+'-cena'];
+      const noteFor = (m)=>{
+        if(m.made) return '🏠 Nos lo hacen · no hay que comprar nada';
+        const miss = m.ing.filter(id=>this.itemState(id)==='buy');
+        if(!m.ing.length) return '';
+        return miss.length ? '⚠️ Faltan '+miss.length+' de '+m.ing.length+' ingredientes' : '✅ Tenemos todo';
+      };
+      return {name:this.DAYS[i].toUpperCase(), summary:c.full, open:s.openDay===i,
+        tag: i===todayIdx ? 'HOY' : '', tagColor:'hsl(var(--brand))',
+        bg: i===todayIdx ? 'hsl(var(--brand)/.04)' : 'hsl(var(--background))',
+        border: i===todayIdx ? 'hsl(var(--brand)/.4)' : 'hsl(var(--border))',
+        chevron: s.openDay===i ? '▲' : '▼',
+        onToggle: ()=>this.setState(st=>({openDay: st.openDay===i ? null : i})),
+        onOpenDay: ()=>this.setState({view:'hoy', offset: i - todayIdx, secondaryOpen:false}),
+        comida:{full:c.full, note:noteFor(c), deco: cSkip?'line-through':'none', dim:(cEaten||cSkip)?'.5':'1'},
+        cena:{full:n.full, note:noteFor(n), deco: nSkip?'line-through':'none', dim:(nEaten||nSkip)?'.5':'1',
+          hasAlt:n.hasAlt, altDish:n.altFull, altLabel: n.isAlt ? 'Volver al original' : 'Cambiar por la alternativa',
+          onAlt: ()=>this.toggleAlt(i,'cena')}};
+    });
+
+    const todayTasks = (this.MENU[todayIdx].prep||[]).map((label, i)=>this.taskRow('t-'+todayIdx+'-'+i, label, !!s.tasks['t-'+todayIdx+'-'+i]))
+      .concat(s.extraTasks.map(t=>this.taskRow('x-'+t.id, t.label, !!s.tasks['x-'+t.id], ()=>this.removeTask(t.id))));
+    const rest = [];
+    for(let i=todayIdx+1;i<7;i++){
+      const tasks = (this.MENU[i].prep||[]).map((label, j)=>this.taskRow('t-'+i+'-'+j, label, !!s.tasks['t-'+i+'-'+j]));
+      if(tasks.length) rest.push({day:this.DAYS[i], tasks:tasks});
+    }
+    const pendToday = todayTasks.filter(t=>!t.done).length;
+
+    const sheetMeal = s.sheet ? this.meal(s.sheet.di, s.sheet.slot) : null;
+    const actions = [];
+    if(s.sheet){
+      const di2 = s.sheet.di, sl = s.sheet.slot;
+      const eatenNow = !!s.eaten[di2+'-'+sl];
+      if(sheetMeal.hasAlt) actions.push({label: sheetMeal.isAlt ? '↺ Volver al plato original' : '↺ Cambiar por la alternativa',
+        note: sheetMeal.altFull, color:'hsl(var(--foreground))', onClick: ()=>this.toggleAlt(di2, sl)});
+      actions.push({label: eatenNow ? 'Desmarcar' : (sl==='comida' ? '✓ Marcar como comido' : '✓ Marcar como cenado'),
+        note: eatenNow ? 'Vuelve a estar pendiente' : 'La tarjeta queda completada', color:'hsl(var(--foreground))',
+        onClick: ()=>this.toggleEaten(di2, sl)});
+      actions.push({label: s.skipped[di2+'-'+sl] ? 'Retomar esta comida' : 'Saltar esta comida',
+        note: 'No cuenta ni en las tareas ni en la compra', color:'hsl(var(--muted-foreground))',
+        onClick: ()=>this.toggleSkip(di2, sl)});
+    }
+
+    const navFg = (v)=> s.view===v ? 'hsl(var(--brand))' : 'hsl(var(--muted-foreground))';
+    const navBg = (v)=> s.view===v ? 'hsl(var(--brand)/.09)' : 'transparent';
+
+    return {
+      isHoy: s.view==='hoy', isSemana: s.view==='semana', isCompra: s.view==='compra', isPrep: s.view==='preparar',
+      showBreakfast: showBreakfast,
+      dateEyebrow: s.offset===0 ? 'Hoy' : s.offset===1 ? 'Mañana' : s.offset===-1 ? 'Ayer' : 'Otro día',
+      dateMain: this.DAYS[di] + ' ' + sel.getDate() + ' de ' + this.MONTHS[sel.getMonth()],
+      notToday: s.offset!==0,
+      prevDay: ()=>this.setState(st=>({offset:st.offset-1, secondaryOpen:false})),
+      nextDay: ()=>this.setState(st=>({offset:st.offset+1, secondaryOpen:false})),
+      goToday: ()=>this.setState({offset:0, secondaryOpen:false}),
+      primary: this.card(di, pSlot, s.offset===0),
+      secondary: this.card(di, sSlot, false),
+      secondaryOpen: s.secondaryOpen,
+      toggleSecondary: ()=>this.setState(st=>({secondaryOpen:!st.secondaryOpen})),
+      week: week,
+      shop: {pct:pct, countLabel: ready+' de '+items.length+' productos listos', cats:cats, bought:bought,
+        hasBought: bought.length>0, boughtCount: bought.length+'',
+        hint: 'Pulsa un producto para cambiarlo: por comprar → ✅ comprado → 🏠 ya lo tenemos.',
+        newItem: s.newItem,
+        onNewItem: (e)=>this.setState({newItem:e.target.value}),
+        onNewItemKey: (e)=>{ if(e.key==='Enter') this.addItem(); },
+        onAdd: ()=>this.addItem()},
+      prep: {headline: pendToday===0 ? 'Todo listo por hoy' : (pendToday===1 ? '1 cosa que preparar hoy' : pendToday+' cosas que preparar hoy'),
+        today: todayTasks, todayEmpty: todayTasks.length===0, rest: rest, hasRest: rest.length>0,
+        newTask: s.newTask,
+        onNewTask: (e)=>this.setState({newTask:e.target.value}),
+        onNewTaskKey: (e)=>{ if(e.key==='Enter') this.addTask(); },
+        onAdd: ()=>this.addTask()},
+      nav: {hoyFg:navFg('hoy'), hoyBg:navBg('hoy'), semanaFg:navFg('semana'), semanaBg:navBg('semana'),
+        compraFg:navFg('compra'), compraBg:navBg('compra'), prepFg:navFg('preparar'), prepBg:navBg('preparar'),
+        pend: pend+'', hasPend: pend>0},
+      goHoy: ()=>this.setState({view:'hoy', focus:[]}),
+      goSemana: ()=>this.setState({view:'semana', focus:[]}),
+      goCompra: ()=>this.setState({view:'compra'}),
+      goPrep: ()=>this.setState({view:'preparar', focus:[]}),
+      sheetOpen: !!s.sheet,
+      sheet: {title: s.sheet ? (s.sheet.slot==='comida' ? 'Opciones · comida' : 'Opciones · cena') : '', actions:actions},
+      closeSheet: ()=>this.setState({sheet:null}),
+      resetAsk: s.resetAsk,
+      askReset: ()=>this.setState({resetAsk:true}),
+      cancelReset: ()=>this.setState({resetAsk:false}),
+      doReset: ()=>this.setState({eaten:{}, skipped:{}, tasks:{}, shop:{}, resetAsk:false, focus:[]})
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/styles.css">
+<script src="_ds/design-system-a7461d56-593d-4104-8e84-3b72d2a91f02/_ds_bundle.js"></script>
+<style>
+:root{
+  --background:60 20% 98%;
+  --foreground:240 6% 20%;
+  --muted:66 14% 95%;
+  --muted-foreground:240 4% 46%;
+  --border:60 8% 88%;
+  --brand:176 55% 65%;
+  --brand-foreground:180 42% 15%;
+  --accent:259 75% 84%;
+  --accent-foreground:262 30% 24%;
+  --radius:0.75rem;
+}
+body{margin:0;background:hsl(var(--muted));-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-appearance:none}
+a{color:hsl(180 38% 28%);text-decoration:none}
+a:hover{color:hsl(180 38% 22%);text-decoration:underline}
+@keyframes sheetUp{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</helmet>
+<div style="max-width:430px;margin:0 auto;min-height:100vh;background:hsl(var(--background));box-shadow:0 0 0 1px hsl(var(--border));padding-bottom:112px;font-family:ui-sans-serif,system-ui,sans-serif;color:hsl(var(--foreground));text-wrap:pretty">
+
+<sc-if value="{{ banner.show }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:12px 14px 0;border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.22);border-radius:16px;padding:14px 15px;animation:slideDown .2s ease">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div style="font-size:14px;font-weight:680;color:hsl(262 32% 28%)">{{ banner.title }}</div>
+      <button onClick="{{ banner.onClose }}" aria-label="Cerrar" style="width:26px;height:26px;flex:none;border:none;background:transparent;font-size:14px;line-height:1;color:hsl(262 20% 40%)">×</button>
+    </div>
+    <div style="margin-top:7px;display:flex;flex-direction:column;gap:4px">
+      <sc-for list="{{ banner.lines }}" as="ln" hint-placeholder-count="2">
+        <div style="font-size:12.5px;color:hsl(262 20% 34%)">{{ ln.text }}</div>
+      </sc-for>
+    </div>
+    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:7px">
+      <button onClick="{{ banner.onClose }}" style="border:none;background:hsl(var(--brand));border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:650;color:hsl(var(--brand-foreground))">✓ Mantener cambio</button>
+      <sc-if value="{{ banner.hasChange }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ banner.onChange }}" style="border:1px solid hsl(262 30% 70%);background:hsl(var(--background));border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:650;color:hsl(262 32% 30%)">Elegir otra</button>
+      </sc-if>
+      <button onClick="{{ banner.onUndo }}" style="border:1px solid hsl(262 30% 70%);background:hsl(var(--background));border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:650;color:hsl(262 32% 30%)">↩ Deshacer</button>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isHoy }}" hint-placeholder-val="{{ true }}">
+<div>
+  <div style="padding:16px 16px 13px;border-bottom:1px solid hsl(var(--border))">
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ prevDay }}" aria-label="Día anterior" style="width:38px;height:38px;flex:none;border-radius:12px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:16px;line-height:1;color:hsl(var(--muted-foreground))">‹</button>
+      <div style="flex:1;text-align:center;min-width:0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(180 38% 28%)">{{ dateEyebrow }}</div>
+        <div style="font-size:17px;font-weight:650;letter-spacing:-.015em;margin-top:3px">{{ dateMain }}</div>
+      </div>
+      <button onClick="{{ nextDay }}" aria-label="Día siguiente" style="width:38px;height:38px;flex:none;border-radius:12px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:16px;line-height:1;color:hsl(var(--muted-foreground))">›</button>
+    </div>
+    <sc-if value="{{ notToday }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;justify-content:center;margin-top:10px">
+        <button onClick="{{ goToday }}" style="border:none;background:hsl(var(--muted));border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;color:hsl(var(--muted-foreground))">Volver a hoy</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="margin:16px 16px 0;background:{{ primary.bg }};border:1px solid {{ primary.border }};border-radius:22px;padding:20px 20px 18px;box-shadow:0 2px 10px rgba(48,48,54,.04)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:{{ primary.accent }};padding-top:5px">{{ primary.eyebrow }}</div>
+      <button onClick="{{ primary.onOptions }}" style="width:34px;height:34px;flex:none;border-radius:11px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:15px;line-height:1;color:hsl(var(--muted-foreground))">⋯</button>
+    </div>
+    <sc-if value="{{ primary.hasDish }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="margin-top:10px;font-size:31px;line-height:1.06;font-weight:680;letter-spacing:-.025em;text-decoration:{{ primary.deco }};opacity:{{ primary.dim }}">{{ primary.dish }}</div>
+        <sc-if value="{{ primary.hasSide }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:7px;font-size:15.5px;color:hsl(var(--muted-foreground))">+ {{ primary.side }}</div>
+        </sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+          <sc-for list="{{ primary.chips }}" as="c" hint-placeholder-count="1">
+            <span style="font-size:11.5px;font-weight:650;padding:5px 10px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</span>
+          </sc-for>
+        </div>
+        <sc-if value="{{ primary.made }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:7px;font-size:14.5px">
+            <div style="display:flex;gap:8px;align-items:center"><span>🏠</span><span style="font-weight:600">Nos lo hacen</span></div>
+            <div style="display:flex;gap:8px;align-items:center;color:hsl(var(--muted-foreground))"><span>✅</span><span>No hay que comprar ingredientes</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ primary.hasIng }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Necesitas</div>
+              <div style="display:flex;align-items:center;gap:7px">
+                <button onClick="{{ primary.onLessPeople }}" aria-label="Menos personas" style="width:26px;height:26px;border-radius:8px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">−</button>
+                <span style="font-size:11.5px;font-weight:650;color:hsl(var(--muted-foreground));min-width:64px;text-align:center">{{ primary.peopleLabel }}</span>
+                <button onClick="{{ primary.onMorePeople }}" aria-label="Más personas" style="width:26px;height:26px;border-radius:8px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">+</button>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">
+              <sc-for list="{{ primary.ing }}" as="ing" hint-placeholder-count="3">
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:550;padding:6px 11px;border-radius:999px;background:{{ ing.bg }};color:{{ ing.fg }};border:1px solid {{ ing.bd }}">{{ ing.glyph }} {{ ing.name }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ primary.hasMiss }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ primary.onGoShop }}" style="width:100%;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;padding:13px 14px;border-radius:14px;border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.2)">
+            <span style="font-size:14px;font-weight:650;color:hsl(262 32% 28%)">{{ primary.missLabel }}</span>
+            <span style="font-size:12.5px;font-weight:600;color:hsl(262 20% 40%)">Ver compra →</span>
+          </button>
+        </sc-if>
+        <div style="margin-top:12px;font-size:12px;color:hsl(var(--muted-foreground))">{{ primary.perfil }}</div>
+        <sc-if value="{{ primary.showSatChoice }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:18px;border:1px solid hsl(var(--border));border-radius:16px;padding:14px;background:hsl(var(--muted)/.5)">
+            <div style="font-size:13.5px;font-weight:650">¿Qué hacemos hoy?</div>
+            <div style="display:flex;gap:8px;margin-top:11px">
+              <button onClick="{{ primary.onSatBurger }}" style="flex:1;border:1px solid hsl(var(--brand)/.6);background:hsl(var(--brand)/.16);border-radius:13px;padding:13px 10px;font-size:13.5px;font-weight:650;color:hsl(180 34% 24%)">🍔 Hamburguesa</button>
+              <button onClick="{{ primary.onSatOut }}" style="flex:1;border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.2);border-radius:13px;padding:13px 10px;font-size:13.5px;font-weight:650;color:hsl(262 32% 28%)">🍽️ Comer fuera</button>
+            </div>
+          </div>
+        </sc-if>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+          <sc-if value="{{ primary.pendingComida }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">✓ Hemos comido esto</x-import>
+          </sc-if>
+          <sc-if value="{{ primary.canLogReal }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ primary.onLogReal }}" class-name="w-full" hint-size="100%,44px">📝 He comido otra cosa</x-import>
+          </sc-if>
+          <sc-if value="{{ primary.pendingCena }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">✓ Ya hemos cenado</x-import>
+          </sc-if>
+          <sc-if value="{{ primary.eaten }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ primary.onEat }}" class-name="w-full" hint-size="100%,44px">Deshacer «comido»</x-import>
+          </sc-if>
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ primary.onChangePlan }}" class-name="w-full" hint-size="100%,44px">↪ Cambiar plan</x-import>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ primary.isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="margin-top:10px;font-size:24px;line-height:1.1;font-weight:660;letter-spacing:-.02em;color:hsl(var(--muted-foreground))">Sin plan</div>
+        <div style="margin-top:8px;font-size:14px;color:hsl(var(--muted-foreground))">{{ primary.emptyNote }}</div>
+        <div style="margin-top:18px">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ primary.onPick }}" class-name="w-full" hint-size="100%,44px">Elegir plato</x-import>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <button onClick="{{ toggleSecondary }}" style="width:100%;margin-top:14px;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:none;border-top:1px solid hsl(var(--border));border-bottom:1px solid hsl(var(--border));background:hsl(var(--background))">
+    <span style="min-width:0">
+      <span style="display:block;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ secondary.teaserLabel }}</span>
+      <span style="display:block;font-size:15px;font-weight:600;margin-top:4px;letter-spacing:-.01em">{{ secondary.full }}</span>
+    </span>
+    <span style="flex:none;font-size:13px;color:hsl(var(--muted-foreground))">{{ secondaryChevron }}</span>
+  </button>
+
+  <sc-if value="{{ secondaryOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:14px 16px 0;background:{{ secondary.bg }};border:1px solid {{ secondary.border }};border-radius:18px;padding:17px;animation:slideDown .2s ease">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:{{ secondary.accent }};padding-top:4px">{{ secondary.eyebrow }}</div>
+        <button onClick="{{ secondary.onOptions }}" style="width:32px;height:32px;flex:none;border-radius:10px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:14px;line-height:1;color:hsl(var(--muted-foreground))">⋯</button>
+      </div>
+      <div style="margin-top:8px;font-size:22px;line-height:1.12;font-weight:660;letter-spacing:-.02em;text-decoration:{{ secondary.deco }};opacity:{{ secondary.dim }}">{{ secondary.dish }}</div>
+      <sc-if value="{{ secondary.hasSide }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:5px;font-size:14px;color:hsl(var(--muted-foreground))">+ {{ secondary.side }}</div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+        <sc-for list="{{ secondary.chips }}" as="c" hint-placeholder-count="1">
+          <span style="font-size:11px;font-weight:650;padding:4px 9px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</span>
+        </sc-for>
+      </div>
+      <sc-if value="{{ secondary.made }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:12px;font-size:14px;display:flex;gap:8px;align-items:center"><span>🏠</span><span style="font-weight:600">Nos lo hacen</span></div>
+      </sc-if>
+      <sc-if value="{{ secondary.hasIng }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:13px">
+          <sc-for list="{{ secondary.ing }}" as="ing" hint-placeholder-count="2">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:550;padding:5px 10px;border-radius:999px;background:{{ ing.bg }};color:{{ ing.fg }};border:1px solid {{ ing.bd }}">{{ ing.glyph }} {{ ing.name }}</span>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ secondary.hasMiss }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ secondary.onGoShop }}" style="width:100%;margin-top:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;padding:11px 13px;border-radius:12px;border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.2)">
+          <span style="font-size:13px;font-weight:650;color:hsl(262 32% 28%)">{{ secondary.missLabel }}</span>
+          <span style="font-size:12px;font-weight:600;color:hsl(262 20% 40%)">→</span>
+        </button>
+      </sc-if>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <sc-if value="{{ secondary.pendingComida }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">✓ Comido</x-import>
+        </sc-if>
+        <sc-if value="{{ secondary.pendingCena }}" hint-placeholder-val="{{ true }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">✓ Cenado</x-import>
+        </sc-if>
+        <sc-if value="{{ secondary.eaten }}" hint-placeholder-val="{{ false }}">
+          <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ secondary.onEat }}" class-name="w-full" hint-size="100%,42px">Deshacer «cenado»</x-import>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showBreakfast }}" hint-placeholder-val="{{ true }}">
+    <div style="margin:22px 20px 0;display:flex;gap:22px;font-size:12.5px;color:hsl(var(--muted-foreground))">
+      <div><span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75">Desayuno</span><span style="display:block;margin-top:3px">Café + pitufo</span></div>
+      <div><span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75">Media mañana</span><span style="display:block;margin-top:3px">Fruta</span></div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSemana }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="padding:18px 20px 14px;border-bottom:1px solid hsl(var(--border))">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(180 38% 28%)">📅 Plan actual</div>
+    <div style="font-size:21px;font-weight:680;letter-spacing:-.02em;margin-top:3px">La semana</div>
+    <button onClick="{{ toggleOriginal }}" style="margin-top:10px;border:1px solid hsl(var(--border));background:hsl(var(--background));border-radius:999px;padding:6px 13px;font-size:12px;font-weight:600;color:hsl(var(--muted-foreground))">{{ originalLabel }}</button>
+  </div>
+
+  <sc-if value="{{ showOriginal }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:14px 16px 0;border:1px dashed hsl(var(--border));border-radius:16px;padding:15px;background:hsl(var(--muted)/.5);animation:slideDown .18s ease">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Plan original</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ originalPlan }}" as="o" hint-placeholder-count="7">
+          <div style="display:flex;gap:10px;font-size:12.5px">
+            <span style="width:74px;flex:none;font-weight:650;color:hsl(var(--muted-foreground))">{{ o.day }}</span>
+            <span style="min-width:0;color:hsl(var(--muted-foreground))">{{ o.text }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasOrphans }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:14px 16px 0;border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.2);border-radius:16px;padding:15px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(262 32% 28%)">Sin hueco esta semana</div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px">
+        <sc-for list="{{ orphans }}" as="o" hint-placeholder-count="1">
+          <button onClick="{{ o.onPlace }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid hsl(262 30% 78%);background:hsl(var(--background));border-radius:12px;padding:11px 13px">
+            <span style="font-size:14px;font-weight:600">{{ o.name }}</span>
+            <span style="font-size:12px;font-weight:650;color:hsl(262 32% 32%)">Buscar hueco →</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="padding:14px 16px 0;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+      <div style="border:1px solid {{ d.border }};border-radius:18px;background:{{ d.bg }};overflow:hidden">
+        <button onClick="{{ d.onToggle }}" style="width:100%;border:none;background:transparent;padding:15px 16px;display:flex;align-items:center;gap:12px;text-align:left">
+          <span style="flex:1;min-width:0">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">{{ d.name }}</span>
+              <span style="font-size:11px;font-weight:650;color:hsl(180 38% 28%)">{{ d.tag }}</span>
+            </span>
+            <span style="display:block;font-size:14.5px;color:hsl(var(--muted-foreground));margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.summary }}</span>
+          </span>
+          <span style="flex:none;font-size:12px;color:hsl(var(--muted-foreground))">{{ d.chevron }}</span>
+        </button>
+        <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:2px 16px 16px;animation:slideDown .18s ease">
+            <div style="height:1px;background:hsl(var(--border));margin:0 0 14px"></div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-if value="{{ showBreakfast }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:12px">
+                  <div style="flex:1"><div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Desayuno</div><div style="font-size:14px;margin-top:3px">Café + pitufo</div></div>
+                  <div style="flex:1"><div style="font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Media mañana</div><div style="font-size:14px;margin-top:3px">Fruta</div></div>
+                </div>
+              </sc-if>
+              <sc-for list="{{ d.slots }}" as="sl" hint-placeholder-count="2">
+                <button onClick="{{ sl.onOptions }}" style="width:100%;text-align:left;border:1px solid hsl(var(--border));background:hsl(var(--background));border-radius:14px;padding:13px">
+                  <span style="display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ sl.label }}</span>
+                  <span style="display:block;font-size:15.5px;font-weight:600;margin-top:4px;letter-spacing:-.01em;text-decoration:{{ sl.deco }};opacity:{{ sl.dim }}">{{ sl.full }}</span>
+                  <span style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+                    <sc-for list="{{ sl.chips }}" as="c" hint-placeholder-count="1">
+                      <span style="font-size:10.5px;font-weight:650;padding:4px 9px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</span>
+                    </sc-for>
+                  </span>
+                  <span style="display:block;font-size:12px;color:hsl(var(--muted-foreground));margin-top:7px">{{ sl.note }}</span>
+                </button>
+              </sc-for>
+              <button onClick="{{ d.onOpenDay }}" style="align-self:flex-start;border:none;background:transparent;padding:2px 0;font-size:13px;font-weight:650;color:hsl(180 38% 28%)">Abrir este día →</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCompra }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="padding:18px 20px 15px;border-bottom:1px solid hsl(var(--border))">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(180 38% 28%)">🛒 Compra semanal</div>
+    <div style="margin-top:10px">
+      <x-import component-from-global-scope="MoicroSocialUI.Progress" value="{{ shop.pct }}" label="{{ shop.countLabel }}" hint-size="100%,30px"></x-import>
+    </div>
+  </div>
+  <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:20px">
+    <sc-for list="{{ shop.cats }}" as="cat" hint-placeholder-count="5">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 4px 8px">
+          <span style="font-size:14px">{{ cat.icon }}</span>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">{{ cat.cat }}</span>
+          <span style="font-size:11px;color:hsl(var(--muted-foreground))">{{ cat.count }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ cat.items }}" as="it" hint-placeholder-count="4">
+            <div style="border-radius:14px;border:1px solid {{ it.bd }};background:{{ it.bg }};box-shadow:{{ it.ring }}">
+              <div style="display:flex;align-items:center;gap:10px;padding:11px 13px">
+                <button onClick="{{ it.onTap }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:11px;border:none;background:transparent;padding:2px 0;text-align:left">
+                  <span style="width:26px;height:26px;flex:none;border-radius:9px;border:1px solid {{ it.dotBd }};background:{{ it.dotBg }};display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ it.dotFg }}">{{ it.glyph }}</span>
+                  <span style="min-width:0">
+                    <span style="display:block;font-size:14.5px;font-weight:600;letter-spacing:-.01em;text-decoration:{{ it.deco }};color:{{ it.fg }}">{{ it.name }}</span>
+                    <span style="display:block;font-size:12px;color:hsl(var(--muted-foreground));margin-top:2px">{{ it.meta }}</span>
+                  </span>
+                </button>
+                <sc-if value="{{ it.removable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ it.onRemove }}" aria-label="Quitar" style="width:28px;height:28px;flex:none;border-radius:9px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">×</button>
+                </sc-if>
+              </div>
+              <sc-if value="{{ it.unused }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 13px;border-top:1px dashed hsl(var(--border))">
+                  <span style="font-size:11.5px;font-weight:600;color:hsl(262 32% 32%)">⚠️ Ya no aparece en el menú</span>
+                  <button onClick="{{ it.onAskDelete }}" style="border:1px solid hsl(262 30% 78%);background:hsl(var(--accent)/.2);border-radius:9px;padding:6px 10px;font-size:11.5px;font-weight:650;color:hsl(262 32% 28%)">Eliminar de compra</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+
+    <div>
+      <div style="padding:0 4px 8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Añadir producto</div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="flex:1">
+          <x-import component-from-global-scope="MoicroSocialUI.Input" value="{{ shop.newItem }}" on-change="{{ shop.onNewItem }}" on-key-down="{{ shop.onNewItemKey }}" placeholder="Servilletas, aceite…" hint-size="100%,42px"></x-import>
+        </div>
+        <x-import component-from-global-scope="MoicroSocialUI.Button" on-click="{{ shop.onAdd }}" hint-size="auto,42px">Añadir</x-import>
+      </div>
+    </div>
+
+    <sc-if value="{{ shop.hasBought }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 4px 8px">
+          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(180 38% 26%)">✅ Ya comprado</span>
+          <span style="font-size:11px;color:hsl(var(--muted-foreground))">{{ shop.boughtCount }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ shop.bought }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.onTap }}" style="display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:14px;border:1px solid hsl(var(--brand)/.5);background:hsl(var(--brand)/.14);text-align:left">
+              <span style="width:24px;height:24px;flex:none;border-radius:8px;background:hsl(var(--brand));color:hsl(var(--brand-foreground));display:flex;align-items:center;justify-content:center;font-size:12px">✓</span>
+              <span style="min-width:0;flex:1">
+                <span style="display:block;font-size:14px;font-weight:550;text-decoration:line-through;color:hsl(180 25% 30%)">{{ it.name }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="padding:6px 4px 0">
+      <div style="font-size:12px;color:hsl(var(--muted-foreground));line-height:1.5">{{ shop.hint }}</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPrep }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="padding:18px 20px 14px;border-bottom:1px solid hsl(var(--border))">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(180 38% 28%)">👩‍🍳 Preparar</div>
+    <div style="font-size:21px;font-weight:680;letter-spacing:-.02em;margin-top:3px">{{ prep.headline }}</div>
+    <div style="font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:5px">Se recalcula solo si mueves una comida.</div>
+  </div>
+  <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:22px">
+    <div>
+      <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">Hoy</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{ prep.today }}" as="t" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;border:1px solid {{ t.bd }};background:{{ t.bg }}">
+            <button onClick="{{ t.onToggle }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:11px;border:none;background:transparent;padding:2px 0;text-align:left">
+              <span style="width:24px;height:24px;flex:none;border-radius:8px;border:1px solid {{ t.dotBd }};background:{{ t.dotBg }};color:{{ t.dotFg }};display:flex;align-items:center;justify-content:center;font-size:12px">{{ t.glyph }}</span>
+              <span style="min-width:0">
+                <span style="display:block;font-size:14.5px;font-weight:550;text-decoration:{{ t.deco }};color:{{ t.fg }}">{{ t.label }}</span>
+                <span style="display:block;font-size:11.5px;color:hsl(var(--muted-foreground));margin-top:2px">{{ t.note }}</span>
+              </span>
+            </button>
+            <sc-if value="{{ t.removable }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ t.onRemove }}" aria-label="Quitar tarea" style="width:28px;height:28px;flex:none;border-radius:9px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:13px;line-height:1;color:hsl(var(--muted-foreground))">×</button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ prep.todayEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 14px;border-radius:14px;border:1px dashed hsl(var(--border));font-size:14px;color:hsl(var(--muted-foreground))">Hoy no hay nada que preparar. 🙌</div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;margin-top:10px">
+        <div style="flex:1">
+          <x-import component-from-global-scope="MoicroSocialUI.Input" value="{{ prep.newTask }}" on-change="{{ prep.onNewTask }}" on-key-down="{{ prep.onNewTaskKey }}" placeholder="+ Añadir tarea" hint-size="100%,42px"></x-import>
+        </div>
+        <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ prep.onAdd }}" hint-size="auto,42px">Añadir</x-import>
+      </div>
+    </div>
+
+    <sc-if value="{{ prep.hasRest }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Resto de la semana</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ prep.rest }}" as="g" hint-placeholder-count="3">
+            <div>
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:hsl(var(--muted-foreground));padding:0 4px 6px">{{ g.day }}</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <sc-for list="{{ g.tasks }}" as="t" hint-placeholder-count="2">
+                  <button onClick="{{ t.onToggle }}" style="display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:14px;border:1px solid {{ t.bd }};background:{{ t.bg }};text-align:left">
+                    <span style="width:22px;height:22px;flex:none;border-radius:7px;border:1px solid {{ t.dotBd }};background:{{ t.dotBg }};color:{{ t.dotFg }};display:flex;align-items:center;justify-content:center;font-size:11px">{{ t.glyph }}</span>
+                    <span style="font-size:14px;text-decoration:{{ t.deco }};color:{{ t.fg }}">{{ t.label }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBalance }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div style="padding:18px 20px 14px;border-bottom:1px solid hsl(var(--border))">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:hsl(262 32% 34%)">💜 Equilibrio</div>
+    <div style="font-size:21px;font-weight:680;letter-spacing:-.02em;margin-top:3px">Esta semana</div>
+    <div style="font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:5px">{{ bal.basis }}</div>
+  </div>
+  <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <sc-for list="{{ bal.metrics }}" as="m" hint-placeholder-count="6">
+        <div style="border:1px solid hsl(var(--border));background:{{ m.bg }};border-radius:16px;padding:14px 15px">
+          <div style="font-size:17px;line-height:1">{{ m.icon }}</div>
+          <div style="font-size:11.5px;font-weight:650;color:hsl(var(--muted-foreground));margin-top:8px">{{ m.name }}</div>
+          <div style="display:flex;align-items:center;gap:7px;margin-top:4px">
+            <span style="width:8px;height:8px;border-radius:999px;background:{{ m.dot }};flex:none"></span>
+            <span style="font-size:15px;font-weight:680;letter-spacing:-.01em">{{ m.value }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="border:1px solid hsl(var(--border));border-radius:16px;padding:16px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Reparto aproximado</div>
+      <div style="margin-top:13px;display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ bal.bars }}" as="b" hint-placeholder-count="3">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:600">
+              <span>{{ b.name }}</span><span style="color:hsl(var(--muted-foreground))">{{ b.label }}</span>
+            </div>
+            <div style="margin-top:6px;height:8px;border-radius:999px;background:hsl(var(--muted));overflow:hidden">
+              <div style="height:100%;border-radius:999px;background:{{ b.color }};width:{{ b.width }}"></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:12px;font-size:11.5px;color:hsl(var(--muted-foreground));line-height:1.5">Sin cantidades exactas no calculamos calorías ni macros: sólo el peso de cada tipo de plato en la semana.</div>
+    </div>
+
+    <div>
+      <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(262 32% 34%)">💡 Para mejorar esta semana</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ bal.tips }}" as="t" hint-placeholder-count="2">
+          <div style="border:1px solid hsl(var(--accent));background:hsl(var(--accent)/.16);border-radius:14px;padding:13px 14px;font-size:13.5px;line-height:1.5;color:hsl(262 28% 26%)">{{ t.text }}</div>
+        </sc-for>
+        <sc-if value="{{ bal.noTips }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid hsl(var(--brand)/.5);background:hsl(var(--brand)/.14);border-radius:14px;padding:13px 14px;font-size:13.5px;color:hsl(180 30% 24%)">La semana pinta equilibrada. 👌</div>
+        </sc-if>
+      </div>
+    </div>
+
+    <sc-if value="{{ bal.hasReal }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="padding:0 4px 9px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground))">Planificado vs comido</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ bal.real }}" as="r" hint-placeholder-count="2">
+            <div style="border:1px solid hsl(var(--border));border-radius:14px;padding:12px 13px">
+              <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ r.day }}</div>
+              <div style="margin-top:5px;font-size:13px;color:hsl(var(--muted-foreground));text-decoration:line-through">{{ r.planned }}</div>
+              <div style="margin-top:3px;font-size:14.5px;font-weight:600">{{ r.eaten }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="padding:0 4px 0">
+      <sc-if value="{{ bal.hasHistory }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:hsl(var(--muted-foreground));padding-bottom:8px">Historial</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ bal.history }}" as="h" hint-placeholder-count="1">
+              <div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;border:1px solid hsl(var(--border));border-radius:12px;padding:10px 12px">
+                <span style="font-weight:600">{{ h.label }}</span>
+                <span style="color:hsl(var(--muted-foreground))">{{ h.summary }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <button onClick="{{ restoreBase }}" style="width:100%;padding:13px;border-radius:14px;border:1px solid hsl(var(--brand)/.6);background:hsl(var(--brand)/.14);font-size:14px;font-weight:650;color:hsl(180 34% 24%)">↺ Restaurar menú base</button>
+      <button onClick="{{ askNewWeek }}" style="width:100%;margin-top:8px;padding:13px;border-radius:14px;border:1px solid hsl(var(--border));background:hsl(var(--background));font-size:14px;font-weight:600;color:hsl(var(--muted-foreground))">↻ Nueva semana</button>
+      <div style="margin-top:12px;font-size:11.5px;color:hsl(var(--muted-foreground));line-height:1.5">Orientativo, para comer variado. No son consejos médicos.</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<nav style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px 14px;background:hsl(var(--background)/.94);backdrop-filter:blur(14px);border-top:1px solid hsl(var(--border));z-index:20">
+  <button onClick="{{ goHoy }}" style="border:none;background:{{ nav.hoyBg }};border-radius:14px;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.hoyFg }}">
+    <span style="font-size:16px;line-height:1">🏠</span><span style="font-size:9.5px;font-weight:650">Hoy</span>
+  </button>
+  <button onClick="{{ goSemana }}" style="border:none;background:{{ nav.semanaBg }};border-radius:14px;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.semanaFg }}">
+    <span style="font-size:16px;line-height:1">📅</span><span style="font-size:9.5px;font-weight:650">Semana</span>
+  </button>
+  <button onClick="{{ goCompra }}" style="border:none;background:{{ nav.compraBg }};border-radius:14px;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.compraFg }};position:relative">
+    <span style="font-size:16px;line-height:1">🛒</span><span style="font-size:9.5px;font-weight:650">Compra</span>
+    <sc-if value="{{ nav.hasPend }}" hint-placeholder-val="{{ true }}">
+      <span style="position:absolute;top:5px;right:calc(50% - 20px);min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:hsl(var(--brand));color:hsl(var(--brand-foreground));font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ nav.pend }}</span>
+    </sc-if>
+  </button>
+  <button onClick="{{ goPrep }}" style="border:none;background:{{ nav.prepBg }};border-radius:14px;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.prepFg }}">
+    <span style="font-size:16px;line-height:1">👩‍🍳</span><span style="font-size:9.5px;font-weight:650">Preparar</span>
+  </button>
+  <button onClick="{{ goBalance }}" style="border:none;background:{{ nav.balBg }};border-radius:14px;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:54px;color:{{ nav.balFg }}">
+    <span style="font-size:16px;line-height:1">💜</span><span style="font-size:9.5px;font-weight:650">Equilibrio</span>
+  </button>
+</nav>
+
+<sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div onClick="{{ closeSheet }}" style="position:fixed;inset:0;background:rgba(48,48,54,.34);z-index:40;animation:fadeIn .18s ease"></div>
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;max-height:80vh;overflow:auto;background:hsl(var(--background));border-radius:24px 24px 0 0;padding:10px 14px 20px;z-index:41;animation:sheetUp .22s cubic-bezier(.2,.8,.2,1)">
+    <div style="width:38px;height:4px;border-radius:2px;background:hsl(var(--border));margin:4px auto 14px"></div>
+    <div style="padding:0 6px 4px;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground))">{{ sheet.title }}</div>
+    <div style="padding:0 6px 10px;font-size:13px;color:hsl(var(--muted-foreground))">{{ sheet.subtitle }}</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <sc-for list="{{ sheet.actions }}" as="opt" hint-placeholder-count="4">
+        <button onClick="{{ opt.onClick }}" style="text-align:left;padding:14px 15px;border-radius:15px;border:1px solid {{ opt.bd }};background:{{ opt.bg }};color:{{ opt.color }}">
+          <span style="display:block;font-size:15px;font-weight:600">{{ opt.label }}</span>
+          <span style="display:block;font-size:12.5px;color:hsl(var(--muted-foreground));margin-top:3px">{{ opt.note }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <button onClick="{{ closeSheet }}" style="width:100%;margin-top:10px;padding:14px;border-radius:15px;border:none;background:hsl(var(--muted));font-size:14.5px;font-weight:600;color:hsl(var(--muted-foreground))">Cancelar</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ dialog.open }}" hint-placeholder-val="{{ false }}">
+<div>
+  <div onClick="{{ dialog.onCancel }}" style="position:fixed;inset:0;background:rgba(48,48,54,.34);z-index:50;animation:fadeIn .18s ease"></div>
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 40px));background:hsl(var(--background));border:1px solid hsl(var(--border));border-radius:20px;padding:22px;z-index:51">
+    <div style="font-size:17px;font-weight:680;letter-spacing:-.01em">{{ dialog.title }}</div>
+    <div style="font-size:14px;color:hsl(var(--muted-foreground));margin-top:8px;line-height:1.5">{{ dialog.body }}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:20px">
+      <sc-for list="{{ dialog.actions }}" as="a" hint-placeholder-count="2">
+        <button onClick="{{ a.onClick }}" style="width:100%;padding:13px;border-radius:12px;border:1px solid {{ a.bd }};background:{{ a.bg }};font-size:14.5px;font-weight:650;color:{{ a.fg }}">{{ a.label }}</button>
+      </sc-for>
+      <x-import component-from-global-scope="MoicroSocialUI.Button" variant="ghost" on-click="{{ dialog.onCancel }}" class-name="w-full" hint-size="100%,42px">Cancelar</x-import>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:430,&quot;height&quot;:900},&quot;protagonista&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;comida&quot;,&quot;cena&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;'auto' | 'comida' | 'cena'&quot;,&quot;section&quot;:&quot;Comportamiento&quot;},&quot;mostrarDesayuno&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamiento&quot;},&quot;cicloCompra&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Comprar → Ya tenemos → Comprado&quot;,&quot;Comprar → Comprado&quot;],&quot;default&quot;:&quot;Comprar → Ya tenemos → Comprado&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Compra&quot;}}">
+class Component extends DCLogic {
+  DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  TEAL = 'hsl(var(--brand))';
+  TEAL_BG = 'hsl(var(--brand)/.14)';
+  TEAL_BD = 'hsl(var(--brand)/.55)';
+  TEAL_INK = 'hsl(180 34% 24%)';
+  LILA_BG = 'hsl(var(--accent)/.2)';
+  LILA_BD = 'hsl(var(--accent))';
+  LILA_INK = 'hsl(262 32% 28%)';
+
+  SHOP = [
+    {cat:'Carne y pescado', icon:'🥩', items:[
+      {id:'pollo',name:'Pollo',qty:'aprox. 1 kg'},
+      {id:'pinchitos',name:'Pinchitos de cerdo',qty:'500–600 g'},
+      {id:'hamburguesas',name:'Hamburguesas',qty:'2'},
+      {id:'rosada',name:'Rosada',qty:'400–500 g'},
+      {id:'pescado',name:'Pescado para horno',qty:'500–600 g'}]},
+    {cat:'Huevos y lácteos', icon:'🥚', items:[
+      {id:'huevos',name:'Huevos',qty:'10–12'},
+      {id:'yogures',name:'Yogures proteicos',qty:'6',always:true},
+      {id:'queso',name:'Mozzarella o queso rallado',qty:'150–200 g'}]},
+    {cat:'Verduras', icon:'🥬', items:[
+      {id:'calabacines',name:'Calabacines',qty:'4–5'},
+      {id:'calabaza',name:'Calabaza',qty:'700 g – 1 kg'},
+      {id:'patatas',name:'Patatas',qty:'1,5 kg'},
+      {id:'cebollas',name:'Cebollas',qty:'4'},
+      {id:'pimientos',name:'Pimientos',qty:'3'},
+      {id:'tomates',name:'Tomates',qty:'5–6'},
+      {id:'ensalada',name:'Ensalada o lechuga',qty:'1 bolsa'},
+      {id:'champis',name:'Champiñones',qty:'1 bandeja'},
+      {id:'verdura',name:'Verduras para acompañar',qty:''},
+      {id:'ajo',name:'Ajo',qty:'',always:true}]},
+    {cat:'Fruta', icon:'🍌', items:[
+      {id:'platanos',name:'Plátanos',qty:'4',always:true},
+      {id:'manzanas',name:'Manzanas',qty:'4',always:true},
+      {id:'mandarinas',name:'Mandarinas o naranjas',qty:'4',always:true},
+      {id:'peras',name:'Peras',qty:'2',always:true}]},
+    {cat:'Pan y despensa', icon:'🍞', items:[
+      {id:'pitufos',name:'Pan / pitufos de desayuno',qty:'',always:true},
+      {id:'panint',name:'Pan integral',qty:''},
+      {id:'panham',name:'Panes de hamburguesa',qty:'2'},
+      {id:'pizzabase',name:'Base de pizza',qty:''},
+      {id:'triturado',name:'Tomate triturado',qty:''},
+      {id:'atun',name:'Atún',qty:'2 latas'},
+      {id:'cafe',name:'Café',qty:'',always:true}]}
+  ];
+
+  DISHES = {
+    d_sopa:{name:'Sopa de verduras',side:'Yogur proteico',made:true,prio:true,ing:[],tags:['verdura'],perfil:'Comida ligera',kind:'comida',prep:[]},
+    d_lentejas:{name:'Lentejas',side:'Yogur proteico',made:true,prio:true,ing:[],tags:['legumbres','proteina','hidratos'],perfil:'Comida completa',kind:'comida',prep:[]},
+    d_puchero:{name:'Puchero',side:'Yogur proteico',made:true,prio:true,ing:[],tags:['legumbres','carne','verdura','proteina'],perfil:'Comida completa',kind:'comida',prep:[]},
+    d_calabaza:{name:'Crema de calabaza',side:'Pollo al horno',ing:['calabaza','cebollas','pollo','patatas'],tags:['verdura','carne','proteina','hidratos'],perfil:'Comida completa',kind:'comida',
+      prep:[{t:'Sacar el pollo del congelador',when:'before'},{t:'Pelar y trocear la calabaza',when:'same'}]},
+    d_pizza:{name:'Pizza sana',side:'',ing:['pizzabase','triturado','queso','champis','pimientos'],tags:['hidratos','verdura'],perfil:'Fuente de hidratos',kind:'comida',
+      prep:[{t:'Rallar el queso para la pizza',when:'same'}]},
+    d_burger:{name:'Hamburguesa',side:'Ensalada',ing:['hamburguesas','panham','ensalada','tomates'],tags:['carne','proteina','hidratos','verdura'],perfil:'Comida completa',kind:'comida',
+      prep:[{t:'Sacar las hamburguesas del congelador',when:'before'},{t:'Lavar la ensalada',when:'same'}]},
+    d_pescado:{name:'Pescado al horno',side:'Patatas + verduras',ing:['pescado','patatas','verdura','cebollas'],tags:['pescado','proteina','verdura','hidratos'],perfil:'Comida completa',kind:'comida',
+      prep:[{t:'Descongelar el pescado',when:'before'},{t:'Pelar las patatas',when:'same'}]},
+    c_pinchito_pan:{name:'Pinchito de cerdo',side:'Pan integral',ing:['pinchitos','panint'],tags:['carne','proteina','hidratos'],perfil:'Alto en proteína',kind:'cena',alt:'a_crema_atun',
+      prep:[{t:'Sacar los pinchitos del congelador',when:'before'}]},
+    c_tortilla_pollo:{name:'Tortilla francesa',side:'Verduras + pollo a la plancha',ing:['huevos','verdura','pollo'],tags:['huevos','carne','proteina','verdura'],perfil:'Alto en proteína',kind:'cena',alt:'a_crema_rosada',
+      prep:[{t:'Sacar el pollo del congelador',when:'before'},{t:'Lavar y trocear la verdura',when:'same'}]},
+    c_pinchito:{name:'Pinchito',side:'',ing:['pinchitos'],tags:['carne','proteina'],perfil:'Alto en proteína',kind:'cena',alt:'a_crema_pollo',
+      prep:[{t:'Sacar el pinchito del congelador',when:'before'}]},
+    c_tortilla_verd:{name:'Tortilla francesa',side:'Verduras',ing:['huevos','verdura'],tags:['huevos','proteina','verdura'],perfil:'Comida ligera',kind:'cena',
+      prep:[{t:'Preparar las verduras',when:'same'}]},
+    c_calabacin_rosada:{name:'Crema de calabacín',side:'Rosada',ing:['calabacines','rosada'],tags:['pescado','proteina','verdura'],perfil:'Comida ligera',kind:'cena',
+      prep:[{t:'Descongelar la rosada',when:'before'},{t:'Hacer la crema de calabacín',when:'same'}]},
+    c_picoteo:{name:'Picoteo',side:'',ing:[],tags:[],perfil:'Comida ligera',kind:'cena',prep:[]},
+    c_pollo_crema:{name:'Pollo a la plancha',side:'Crema de verduras',ing:['pollo','calabacines'],tags:['carne','proteina','verdura'],perfil:'Alto en proteína',kind:'cena',
+      prep:[{t:'Sacar el pollo del congelador',when:'before'},{t:'Hacer la crema de verduras',when:'same'}]},
+    a_crema_atun:{name:'Crema de verduras',side:'Tortilla francesa con atún',ing:['calabacines','huevos','atun'],tags:['pescado','huevos','proteina','verdura'],perfil:'Comida ligera',kind:'cena',
+      prep:[{t:'Hacer la crema de verduras',when:'same'}]},
+    a_crema_rosada:{name:'Crema de verduras',side:'Rosada',ing:['calabacines','rosada'],tags:['pescado','proteina','verdura'],perfil:'Comida ligera',kind:'cena',
+      prep:[{t:'Descongelar la rosada',when:'before'},{t:'Hacer la crema de verduras',when:'same'}]},
+    a_crema_pollo:{name:'Crema de verduras',side:'Pollo a la plancha',ing:['calabacines','pollo'],tags:['carne','proteina','verdura'],perfil:'Alto en proteína',kind:'cena',
+      prep:[{t:'Sacar el pollo del congelador',when:'before'},{t:'Hacer la crema de verduras',when:'same'}]},
+    x_fuera:{name:'Comer fuera',side:'',ing:[],tags:[],perfil:'Sin datos',kind:'both',prep:[]},
+    x_sobras:{name:'Sobras',side:'',ing:[],tags:[],perfil:'Sin datos',kind:'both',prep:[]},
+    x_ensalada:{name:'Ensalada completa',side:'Atún o huevo',ing:['ensalada','tomates','atun','huevos'],tags:['verdura','pescado','proteina'],perfil:'Comida ligera',kind:'both',prep:[]}
+  };
+
+  BASE = {
+    comida:['d_sopa','d_lentejas','d_puchero','d_calabaza','d_pizza','d_burger','d_pescado'],
+    cena:['c_pinchito_pan','c_tortilla_pollo','c_pinchito','c_tortilla_verd','c_calabacin_rosada','c_picoteo','c_pollo_crema']
+  };
+
+  KEY = 'menuSemanal.v2';
+
+  state = {view:'hoy', offset:0, secondaryOpen:false, openDay:null, sheet:null, dialog:null,
+    newItem:'', newTask:'', showOriginal:false, focus:[],
+    plan:{comida:this.BASE.comida.slice(), cena:this.BASE.cena.slice()},
+    status:{}, moved:{}, subs:{}, log:{}, people:{}, orphans:[], locked:{}, satChoice:null,
+    shop:{}, tasks:{}, extraItems:[], extraTasks:[], hidden:[], undo:null, banner:null, history:[]};
+
+  componentDidMount(){
+    try{
+      const raw = localStorage.getItem(this.KEY);
+      if(raw){
+        const d = JSON.parse(raw);
+        const keep = {};
+        ['plan','status','moved','subs','log','people','orphans','locked','satChoice','shop','tasks','extraItems','extraTasks','hidden','history'].forEach(k=>{ if(d[k]!==undefined) keep[k]=d[k]; });
+        this.setState(keep);
+      }
+    }catch(e){}
+    this.tick = setInterval(()=>this.forceUpdate(), 60000);
+  }
+  componentWillUnmount(){ if(this.tick) clearInterval(this.tick); }
+  componentDidUpdate(){
+    const s = this.state;
+    try{ localStorage.setItem(this.KEY, JSON.stringify({plan:s.plan, status:s.status, moved:s.moved, subs:s.subs,
+      log:s.log, people:s.people, orphans:s.orphans, locked:s.locked, satChoice:s.satChoice, shop:s.shop, tasks:s.tasks, extraItems:s.extraItems,
+      extraTasks:s.extraTasks, hidden:s.hidden, history:s.history})); }catch(e){}
+  }
+
+  snap(){
+    const s = this.state;
+    return JSON.parse(JSON.stringify({plan:s.plan, status:s.status, moved:s.moved, subs:s.subs, log:s.log,
+      orphans:s.orphans, locked:s.locked, satChoice:s.satChoice || null}));
+  }
+  undo(){
+    const u = this.state.undo;
+    if(!u) return;
+    this.setState(Object.assign({}, u, {undo:null, banner:null}));
+  }
+
+  dish(id){ return id ? this.DISHES[id] : null; }
+  dishFull(id){ const d = this.dish(id); return d ? (d.name + (d.side ? ' + ' + d.side : '')) : 'Sin plan'; }
+  planRef(){ return this._plan || this.state.plan; }
+  slotDish(slot, day){ return this.planRef()[slot][day]; }
+  stat(slot, day){ return this.state.status[slot+'-'+day] || 'pend'; }
+  people(id){ return this.state.people[id] || 2; }
+
+  allItems(){
+    const out = [];
+    this.SHOP.forEach(c=>c.items.forEach(i=>out.push(Object.assign({}, i, {cat:c.cat, icon:c.icon}))));
+    this.state.extraItems.forEach(i=>out.push(Object.assign({}, i, {cat:'Añadidos', icon:'✍️', extra:true, always:true})));
+    return out.filter(i=>this.state.hidden.indexOf(i.id) < 0);
+  }
+  itemState(id){ return this.state.shop[id] || 'buy'; }
+  itemName(id){ const it = this.allItems().find(i=>i.id===id); return it ? it.name : id; }
+  usedIngredients(){
+    const set = {};
+    ['comida','cena'].forEach(k=>{
+      for(let d=0;d<7;d++){
+        const id = this.state.plan[k][d];
+        if(!id || this.stat(k,d)==='skip') continue;
+        (this.dish(id).ing||[]).forEach(g=>{ set[g]=true; });
+        const alt = this.dish(id).alt;
+        if(alt) (this.dish(alt).ing||[]).forEach(g=>{ set[g]=true; });
+      }
+    });
+    this.state.orphans.forEach(id=>{ (this.dish(id).ing||[]).forEach(g=>{ set[g]=true; }); });
+    return set;
+  }
+
+  setBanner(title, lines){ this.setState({banner:{title:title, lines:lines}}); }
+
+  markEaten(slot, day){
+    const key = slot+'-'+day;
+    const id = this.slotDish(slot, day);
+    this.setState(s=>{
+      const st = Object.assign({}, s.status), log = Object.assign({}, s.log);
+      if(st[key]==='done'){ st[key] = s.subs[key] ? 'sub' : 'pend'; delete log[key]; }
+      else { st[key] = 'done'; log[key] = id; }
+      return {status:st, log:log, sheet:null};
+    });
+  }
+  skipSlot(slot, day){
+    const key = slot+'-'+day;
+    const undo = this.snap();
+    this.setState(s=>{
+      const st = Object.assign({}, s.status);
+      st[key] = st[key]==='skip' ? 'pend' : 'skip';
+      return {status:st, sheet:null, undo:undo,
+        banner:{title:'⏭️ Comida saltada', lines:[{text:this.dishFull(s.plan[slot][day])+' no volverá a aparecer esta semana.'}]}};
+    });
+  }
+  dinnerPool(){
+    const ids = {};
+    this.BASE.cena.forEach(id=>{ ids[id] = 1; });
+    Object.keys(this.DISHES).forEach(id=>{ if(id.indexOf('a_')===0 || id==='x_ensalada') ids[id] = 1; });
+    return Object.keys(ids);
+  }
+  hasTag(id, t){ const d = this.dish(id); return !!d && (d.tags||[]).indexOf(t) >= 0; }
+  isHeavy(id){ const d = this.dish(id); if(!d) return false;
+    return d.perfil==='Fuente de hidratos' || (this.hasTag(id,'hidratos') && (this.hasTag(id,'carne') || this.hasTag(id,'pescado'))); }
+  isLight(id){ const d = this.dish(id); return !!d && d.perfil==='Comida ligera'; }
+
+  scoreDinner(cand, lunchId, day){
+    if(!cand) return -99;
+    const a = this.analyze();
+    let sc = 0;
+    if(this.hasTag(cand,'verdura')){
+      sc += 3;
+      if(lunchId && !this.hasTag(lunchId,'verdura')) sc += 3;
+    }
+    if(lunchId && this.isHeavy(lunchId)){
+      if(this.isLight(cand)) sc += 4;
+      if(this.hasTag(cand,'hidratos')) sc -= 4;
+      if(this.isHeavy(cand)) sc -= 3;
+    }
+    if(lunchId && (this.isLight(lunchId) || !this.hasTag(lunchId,'proteina'))){
+      if(this.hasTag(cand,'proteina')) sc += 3;
+      if(this.hasTag(cand,'hidratos')) sc += 1;
+    }
+    if(lunchId && this.hasTag(lunchId,'legumbres')){
+      if(this.isLight(cand)) sc += 2;
+      if(this.hasTag(cand,'hidratos')) sc -= 2;
+    }
+    ['carne','pescado','huevos','legumbres'].forEach(t=>{
+      if(lunchId && this.hasTag(lunchId,t) && this.hasTag(cand,t)) sc -= (t==='carne' ? 4 : 3);
+    });
+    if(this.hasTag(cand,'pescado') && a.pescado < 2) sc += 3;
+    if(this.hasTag(cand,'legumbres') && a.legumbres < 2) sc += 2;
+    if(this.dishFull(cand).toLowerCase().indexOf('pollo') >= 0 && a.pollo >= 3) sc -= 3;
+    const plan = this.planRef();
+    let rep = 0;
+    for(let i=0;i<7;i++){
+      if(i!==day && plan.cena[i]===cand) rep++;
+      if(plan.comida[i]===cand) rep++;
+    }
+    sc -= rep*2;
+    const base = this.BASE.cena[day];
+    if(cand===base) sc += 3;
+    if(base && this.dish(base).alt===cand) sc += 2;
+    if(this.BASE.cena.indexOf(cand) >= 0) sc += 1;
+    if(cand.indexOf('x_')===0) sc -= 4;
+    const ing = this.dish(cand).ing || [];
+    const missing = ing.filter(g=>this.itemState(g)==='buy').length;
+    if(ing.length && missing===0) sc += 1;
+    sc -= missing;
+    return sc;
+  }
+
+  reasonFor(cand, lunchId){
+    if(lunchId && this.isHeavy(lunchId) && this.isLight(cand)) return 'Una cena más ligera y con verdura complementa mejor la comida.';
+    if(lunchId && this.hasTag(lunchId,'carne') && this.hasTag(cand,'pescado')) return 'Ya habéis tomado carne, así que añadimos pescado.';
+    if(lunchId && this.hasTag(lunchId,'pescado') && (this.hasTag(cand,'huevos') || this.hasTag(cand,'carne'))) return 'Cambiamos la proteína para no repetir pescado.';
+    if(lunchId && this.hasTag(lunchId,'legumbres')) return 'Con legumbres al mediodía, una cena sencilla encaja mejor.';
+    if(lunchId && !this.hasTag(lunchId,'verdura') && this.hasTag(cand,'verdura')) return 'Añadimos algo más de verdura al día.';
+    return 'Buscamos más variedad de proteína.';
+  }
+  pickDinner(day, status){
+    const plan = this.planRef();
+    const lunch = plan.comida[day];
+    const cur = plan.cena[day];
+    let best = cur, bestScore = cur ? this.scoreDinner(cur, lunch, day) : -99;
+    this.dinnerPool().forEach(cand=>{
+      if(cand===cur) return;
+      const sc = this.scoreDinner(cand, lunch, day);
+      if(sc > bestScore + 1.5){ bestScore = sc; best = cand; }
+    });
+    if(!best || best===cur) return null;
+    return {id:best, reason:this.reasonFor(best, lunch)};
+  }
+
+  autoBalance(plan, status, subs, day, lines){
+    const key = 'cena-'+day;
+    const st = status[key] || 'pend';
+    if(st==='done' || st==='skip' || this.state.locked[key]) return false;
+    this._plan = plan;
+    const r = this.pickDinner(day, status);
+    this._plan = null;
+    if(!r) return false;
+    const prev = plan.cena[day];
+    plan.cena[day] = r.id;
+    status[key] = 'sub';
+    if(prev) subs[key] = prev;
+    if(prev) lines.push({text:'Antes: ' + this.dishFull(prev)});
+    lines.push({text:'Ahora: ' + this.dishFull(r.id)});
+    lines.push({text:r.reason});
+    return true;
+  }
+
+  changeMeal(slot, day, newId, markDone){
+    const undo = this.snap();
+    const s = this.state;
+    const plan = {comida:s.plan.comida.slice(), cena:s.plan.cena.slice()};
+    const status = Object.assign({}, s.status);
+    const subs = Object.assign({}, s.subs);
+    const log = Object.assign({}, s.log);
+    const oldId = plan[slot][day];
+    plan[slot][day] = newId;
+    if(oldId) subs[slot+'-'+day] = oldId;
+    status[slot+'-'+day] = markDone ? 'done' : 'sub';
+    if(markDone) log[slot+'-'+day] = newId;
+    const lines = [{text:(oldId ? this.dishFull(oldId) + ' → ' : '') + this.dishFull(newId)}];
+    let change = null, dialog = null;
+    if(slot==='comida'){
+      const dinnerSt = status['cena-'+day] || 'pend';
+      const dinnerLocked = !!s.locked['cena-'+day];
+      if(dinnerLocked && dinnerSt!=='done') dialog = {kind:'locked', day:day};
+      else if(dinnerSt!=='done' && dinnerSt!=='skip'){
+        if(this.autoBalance(plan, status, subs, day, lines)) change = {slot:'cena', day:day};
+      }
+    }
+    const satChoice = (slot==='comida' && day===5)
+      ? (newId==='d_burger' ? 'burger' : newId==='x_fuera' ? 'fuera' : null)
+      : s.satChoice;
+    this.setState({plan:plan, status:status, subs:subs, log:log, satChoice:satChoice, sheet:null, undo:undo, dialog:dialog,
+      banner:{title: change ? '✨ Hemos ajustado la cena' : (markDone ? '📝 Anotado lo que habéis comido' : '🔁 Plato cambiado'),
+        lines:lines, change:change}});
+  }
+  substitute(slot, day, newId){ this.changeMeal(slot, day, newId, false); }
+  forceRebalance(day){
+    const s = this.state;
+    const locked = Object.assign({}, s.locked);
+    delete locked['cena-'+day];
+    this.setState({locked:locked, dialog:null}, ()=>{
+      const st = this.state;
+      const plan = {comida:st.plan.comida.slice(), cena:st.plan.cena.slice()};
+      const status = Object.assign({}, st.status);
+      const subs = Object.assign({}, st.subs);
+      const lines = [];
+      if(!this.autoBalance(plan, status, subs, day, lines)){
+        this.setState({banner:{title:'✨ La cena ya encaja bien', lines:[{text:'No hemos encontrado una opción que equilibre mejor el día.'}], change:{slot:'cena', day:day}}});
+        return;
+      }
+      this.setState({plan:plan, status:status, subs:subs,
+        banner:{title:'✨ Hemos equilibrado el día', lines:lines, change:{slot:'cena', day:day}}});
+    });
+  }
+  toggleLock(slot, day){
+    const key = slot+'-'+day;
+    this.setState(s=>{
+      const l = Object.assign({}, s.locked);
+      if(l[key]) delete l[key]; else l[key] = true;
+      return {locked:l, sheet:null};
+    });
+  }
+  swapDay(day){
+    const undo = this.snap();
+    this.setState(s=>{
+      const plan = {comida:s.plan.comida.slice(), cena:s.plan.cena.slice()};
+      const a = plan.comida[day], b = plan.cena[day];
+      plan.comida[day] = b; plan.cena[day] = a;
+      return {plan:plan, sheet:null, undo:undo,
+        banner:{title:'⇅ Comida y cena intercambiadas', lines:[{text:this.DAYS[day]+': '+this.dishFull(b)+' al mediodía, '+this.dishFull(a)+' por la noche.'}]}};
+    });
+  }
+  moveSlot(slot, from, to){
+    const undo = this.snap();
+    const s = this.state;
+    const arr = s.plan[slot].slice();
+    const status = Object.assign({}, s.status);
+    const moved = Object.assign({}, s.moved);
+    const orphans = s.orphans.slice();
+    const lines = [];
+    let cur = arr[from];
+    const movedName = this.dishFull(cur);
+    arr[from] = null;
+    status[slot+'-'+from] = 'moved';
+    delete moved[slot+'-'+from];
+    let src = from;
+    for(let i=to;i<7 && cur;i++){
+      if(status[slot+'-'+i]==='done' || status[slot+'-'+i]==='skip') continue;
+      const tmp = arr[i];
+      arr[i] = cur;
+      status[slot+'-'+i] = 'pend';
+      moved[slot+'-'+i] = {from:src};
+      lines.push({text:this.dishFull(cur)+': '+this.DAYS[src]+' → '+this.DAYS[i]});
+      cur = tmp; src = i;
+    }
+    if(cur){ orphans.push(cur); lines.push({text:this.dishFull(cur)+' se queda sin hueco esta semana.'}); }
+    const plan = {comida:s.plan.comida.slice(), cena:s.plan.cena.slice()};
+    plan[slot] = arr;
+    this.setState({plan:plan, status:status, moved:moved, orphans:orphans,
+      sheet:null, undo:undo, banner:{title:'🔄 Hemos movido tu comida', lines:lines.slice(0,5), change:null}});
+    return movedName;
+  }
+  placeOrphan(id, slot, day){
+    const undo = this.snap();
+    const s = this.state;
+    const arr = s.plan[slot].slice();
+    const status = Object.assign({}, s.status);
+    const moved = Object.assign({}, s.moved);
+    const lines = [];
+    let cur = id, src = -1;
+    for(let i=day;i<7 && cur;i++){
+      if(status[slot+'-'+i]==='done' || status[slot+'-'+i]==='skip') continue;
+      const tmp = arr[i];
+      arr[i] = cur;
+      status[slot+'-'+i] = 'pend';
+      if(src>=0) moved[slot+'-'+i] = {from:src};
+      lines.push({text:this.dishFull(cur)+' → '+this.DAYS[i]});
+      cur = tmp; src = i;
+    }
+    const orphans = s.orphans.filter(o=>o!==id);
+    if(cur) orphans.push(cur);
+    this.setState({plan:Object.assign({}, s.plan, {[slot]:arr}), status:status, moved:moved, orphans:orphans,
+      sheet:null, undo:undo, banner:{title:'🔄 Hemos reorganizado tu semana', lines:lines.slice(0,4)}});
+  }
+
+  nextShopState(st){
+    if(this.props.cicloCompra === 'Comprar → Comprado') return st==='done' ? 'buy' : 'done';
+    return st==='buy' ? 'done' : st==='done' ? 'have' : 'buy';
+  }
+  tapItem(id){ const n = this.nextShopState(this.itemState(id)); this.setState(s=>({shop:Object.assign({}, s.shop, {[id]:n})})); }
+  addItem(){
+    const name = (this.state.newItem||'').trim();
+    if(!name) return;
+    this.setState(s=>({extraItems:s.extraItems.concat([{id:'x'+Date.now(), name:name, qty:''}]), newItem:''}));
+  }
+  removeItem(id){
+    this.setState(s=>{
+      const shop = Object.assign({}, s.shop); delete shop[id];
+      return {extraItems:s.extraItems.filter(i=>i.id!==id), shop:shop, dialog:null};
+    });
+  }
+  hideItem(id){ this.setState(s=>({hidden:s.hidden.concat([id]), dialog:null})); }
+  toggleTask(k){
+    this.setState(s=>{
+      const t = Object.assign({}, s.tasks);
+      if(t[k]) delete t[k]; else t[k] = true;
+      return {tasks:t};
+    });
+  }
+  addTask(){
+    const label = (this.state.newTask||'').trim();
+    if(!label) return;
+    this.setState(s=>({extraTasks:s.extraTasks.concat([{id:'t'+Date.now(), label:label}]), newTask:''}));
+  }
+  removeTask(id){
+    this.setState(s=>{
+      const t = Object.assign({}, s.tasks); delete t['x-'+id];
+      return {extraTasks:s.extraTasks.filter(x=>x.id!==id), tasks:t};
+    });
+  }
+  newWeek(save){
+    const analysis = this.analyze();
+    this.setState(s=>({
+      history: save ? s.history.concat([{label:this.weekLabel(), summary:analysis.pescado+' pescado · '+analysis.legumbres+' legumbres'}]).slice(-6) : s.history,
+      plan:{comida:this.BASE.comida.slice(), cena:this.BASE.cena.slice()},
+      status:{}, moved:{}, subs:{}, log:{}, orphans:[], locked:{}, satChoice:null, shop:{}, tasks:{}, dialog:null, undo:null, banner:null, focus:[]
+    }));
+  }
+  weekLabel(){
+    const now = new Date();
+    const mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay()+6)%7));
+    return 'Semana del ' + mon.getDate() + ' ' + this.MONTHS[mon.getMonth()].slice(0,3);
+  }
+
+  analyze(){
+    const slots = [];
+    ['comida','cena'].forEach(k=>{
+      for(let d=0;d<7;d++){
+        const st = this.stat(k,d);
+        if(st==='skip' || st==='moved') continue;
+        const id = st==='done' ? (this.state.log[k+'-'+d] || this.slotDish(k,d)) : this.slotDish(k,d);
+        if(id) slots.push({id:id, done:st==='done'});
+      }
+    });
+    const has = (id, tag)=> (this.dish(id).tags||[]).indexOf(tag) >= 0;
+    const count = (tag)=> slots.filter(s=>has(s.id, tag)).length;
+    const names = {};
+    slots.forEach(s=>{ names[this.dish(s.id).name] = true; });
+    const pollo = slots.filter(s=>this.dishFull(s.id).toLowerCase().indexOf('pollo') >= 0).length;
+    return {total:slots.length, done:slots.filter(s=>s.done).length,
+      pescado:count('pescado'), carne:count('carne'), legumbres:count('legumbres'), huevos:count('huevos'),
+      verdura:count('verdura'), proteina:count('proteina'), hidratos:count('hidratos'),
+      variedad:Object.keys(names).length, pollo:pollo};
+  }
+
+  chipsFor(slot, day){
+    const st = this.stat(slot, day);
+    const key = slot+'-'+day;
+    const out = [];
+    const teal = {bg:this.TEAL_BG, fg:this.TEAL_INK, bd:this.TEAL_BD};
+    const grey = {bg:'hsl(var(--muted))', fg:'hsl(var(--muted-foreground))', bd:'hsl(var(--border))'};
+    const lila = {bg:this.LILA_BG, fg:this.LILA_INK, bd:this.LILA_BD};
+    if(st==='done') out.push(Object.assign({label:'✅ Comido'}, teal));
+    if(st==='skip') out.push(Object.assign({label:'⏭️ Saltado'}, grey));
+    if(st==='moved') out.push(Object.assign({label:'🔄 Movido a otro día'}, lila));
+    if(st==='sub'){
+      const prev = this.state.subs[key];
+      out.push(Object.assign({label:'🔁 Sustituido' + (prev ? ' · antes ' + this.dish(prev).name : '')}, lila));
+    }
+    if(this.state.moved[key]) out.push(Object.assign({label:'🔄 Movido desde ' + this.DAYS[this.state.moved[key].from].toLowerCase()}, lila));
+    if(this.state.locked[key]) out.push(Object.assign({label:'🔒 Cena fija'}, teal));
+    const id = this.slotDish(slot, day);
+    if(id && this.dish(id).prio && st!=='done') out.push(Object.assign({label:'🔒 Mejor no moverlo'}, grey));
+    if(st==='pend' && !id) out.push(Object.assign({label:'⏳ Sin plan'}, grey));
+    return out;
+  }
+
+  card(slot, day, isToday){
+    const id = this.slotDish(slot, day);
+    const d = this.dish(id);
+    const st = this.stat(slot, day);
+    const eaten = st==='done', skipped = st==='skip', moved = st==='moved';
+    const ing = (d && !d.made ? d.ing : []).map(g=>{
+      const ok = this.itemState(g) !== 'buy';
+      return {name:this.itemName(g), glyph: ok?'✅':'⚠️',
+        bg: ok? this.TEAL_BG : this.LILA_BG, fg: ok? this.TEAL_INK : this.LILA_INK,
+        bd: ok? this.TEAL_BD : this.LILA_BD};
+    });
+    const miss = (d && !d.made ? d.ing : []).filter(g=>this.itemState(g)==='buy');
+    const dayWord = isToday ? 'de hoy' : 'del ' + this.DAYS[day].toLowerCase();
+    const satPick = day===5 && slot==='comida' && !this.state.satChoice && st!=='done'
+      && (id==='d_burger' || id==='x_fuera');
+    return {
+      accent: slot==='comida' ? 'hsl(180 38% 28%)' : 'hsl(262 32% 34%)',
+      showSatChoice: satPick,
+      onSatBurger: ()=>{
+        if(this.slotDish('comida',5)==='d_burger') this.setState({satChoice:'burger'});
+        else this.changeMeal('comida', 5, 'd_burger', false);
+      },
+      onSatOut: ()=>this.changeMeal('comida', 5, 'x_fuera', false),
+      eyebrow: (slot==='comida' ? '🍽️ Comida ' : '🌙 Cena ') + dayWord,
+      teaserLabel: slot==='cena' ? 'Esta noche' : 'Al mediodía',
+      dish: d ? d.name : 'Sin plan', side: d ? d.side : '', hasSide: !!(d && d.side),
+      full: this.dishFull(id), hasDish: !!d, isEmpty: !d,
+      emptyNote: moved ? 'Lo has movido a otro día. Elige qué comer.' : 'Nada planeado todavía.',
+      made: !!(d && d.made), perfil: d ? d.perfil : '',
+      chips: this.chipsFor(slot, day),
+      ing:ing, hasIng: ing.length>0, hasMiss: miss.length>0,
+      missLabel: miss.length===1 ? '⚠️ Te falta 1 ingrediente' : '⚠️ Te faltan '+miss.length+' ingredientes',
+      peopleLabel: this.people(id) + (this.people(id)===1 ? ' persona' : ' personas'),
+      eaten:eaten, skipped:skipped,
+      pendingComida: !eaten && !skipped && !!d && slot==='comida',
+      pendingCena: !eaten && !skipped && !!d && slot==='cena',
+      deco: (skipped || moved) ? 'line-through' : 'none',
+      dim: (eaten || skipped || moved) ? '.55' : '1',
+      bg: eaten ? this.TEAL_BG : 'hsl(var(--background))',
+      border: eaten ? this.TEAL_BD : 'hsl(var(--border))',
+      onEat: ()=>this.markEaten(slot, day),
+      onOptions: ()=>this.setState({sheet:{kind:'meal', slot:slot, day:day}}),
+      onChangePlan: ()=>this.setState({sheet:{kind:'move', slot:slot, day:day}}),
+      onPick: ()=>this.setState({sheet:{kind:'lib', slot:slot, day:day}}),
+      canLogReal: !!d && !eaten && !skipped,
+      onLogReal: ()=>this.setState({sheet:{kind:'real', slot:slot, day:day}}),
+      onLessPeople: ()=>this.setState(s=>({people:Object.assign({}, s.people, {[id]:Math.max(1, this.people(id)-1)})})),
+      onMorePeople: ()=>this.setState(s=>({people:Object.assign({}, s.people, {[id]:Math.min(8, this.people(id)+1)})})),
+      onGoShop: ()=>this.setState({view:'compra', focus:miss.slice(), sheet:null})
+    };
+  }
+
+  taskRow(key, label, note, done, onRemove){
+    return {label:label, note:note||'', glyph: done?'✓':'', done:done,
+      bg: done? this.TEAL_BG : 'hsl(var(--background))',
+      bd: done? this.TEAL_BD : 'hsl(var(--border))',
+      dotBg: done? 'hsl(var(--brand))' : 'hsl(var(--background))',
+      dotBd: done? 'hsl(var(--brand))' : 'hsl(var(--border))',
+      dotFg: 'hsl(var(--brand-foreground))',
+      deco: done? 'line-through' : 'none',
+      fg: done? this.TEAL_INK : 'hsl(var(--foreground))',
+      removable: !!onRemove, onRemove: onRemove || null,
+      onToggle: ()=>this.toggleTask(key)};
+  }
+  tasksForDay(day){
+    const out = [];
+    ['comida','cena'].forEach(k=>{
+      const id = this.slotDish(k, day);
+      const st = this.stat(k, day);
+      if(!id || st==='skip' || st==='moved' || st==='done') return;
+      (this.dish(id).prep||[]).forEach((p, i)=>{
+        if(p.when==='same') out.push({key:'p-'+day+'-'+k+'-'+i, label:p.t, note:this.dish(id).name});
+      });
+    });
+    const next = day+1;
+    if(next<7){
+      ['comida','cena'].forEach(k=>{
+        const id = this.slotDish(k, next);
+        const st = this.stat(k, next);
+        if(!id || st==='skip' || st==='moved' || st==='done') return;
+        (this.dish(id).prep||[]).forEach((p, i)=>{
+          if(p.when==='before') out.push({key:'p-'+next+'-'+k+'-b'+i, label:p.t, note:'Para mañana · '+this.dish(id).name});
+        });
+      });
+    }
+    return out;
+  }
+
+  libFor(slot, day, all){
+    const out = [];
+    Object.keys(this.DISHES).forEach(id=>{
+      const d = this.DISHES[id];
+      if(!all && d.kind!==slot && d.kind!=='both') return;
+      if(id===this.slotDish(slot, day)) return;
+      out.push({id:id, name:this.dishFull(id), perfil:d.perfil});
+    });
+    return out;
+  }
+
+  renderVals(){
+    const s = this.state;
+    const now = new Date();
+    const sel = new Date(now.getFullYear(), now.getMonth(), now.getDate() + s.offset);
+    const di = (sel.getDay()+6)%7;
+    const todayIdx = (now.getDay()+6)%7;
+    const isToday = s.offset===0;
+    const showBreakfast = this.props.mostrarDesayuno !== false;
+    const pref = this.props.protagonista || 'auto';
+    const evening = pref==='cena' || (pref==='auto' && isToday && (now.getHours()>=17 || now.getHours()<5));
+    const pSlot = evening ? 'cena' : 'comida';
+    const sSlot = evening ? 'comida' : 'cena';
+
+    const used = this.usedIngredients();
+    const items = this.allItems();
+    const ready = items.filter(i=>this.itemState(i.id)!=='buy').length;
+    const pend = items.length - ready;
+    const pct = items.length ? Math.round(ready*100/items.length) : 0;
+
+    const mkRow = (it)=>{
+      const st = this.itemState(it.id);
+      const done = st==='done', have = st==='have';
+      const focused = s.focus.indexOf(it.id) >= 0 && st==='buy';
+      const unused = !it.always && !used[it.id] && !done;
+      return {name:it.name, id:it.id,
+        meta: have ? ('🏠 Ya lo tenemos' + (it.qty? ' · '+it.qty : '')) : (it.qty || ''),
+        glyph: done ? '✓' : have ? '🏠' : '',
+        bg: done? this.TEAL_BG : have? 'hsl(var(--muted)/.7)' : 'hsl(var(--background))',
+        bd: focused ? 'hsl(var(--brand))' : done? this.TEAL_BD : 'hsl(var(--border))',
+        ring: focused ? '0 0 0 3px hsl(var(--brand)/.3)' : 'none',
+        dotBg: done? 'hsl(var(--brand))' : 'hsl(var(--background))',
+        dotBd: done? 'hsl(var(--brand))' : 'hsl(var(--border))',
+        dotFg: done? 'hsl(var(--brand-foreground))' : 'hsl(var(--muted-foreground))',
+        deco: done? 'line-through' : 'none',
+        fg: done? this.TEAL_INK : 'hsl(var(--foreground))',
+        unused: unused,
+        removable: !!it.extra,
+        onRemove: it.extra ? ()=>this.removeItem(it.id) : null,
+        onAskDelete: ()=>this.setState({dialog:{kind:'del', id:it.id, name:it.name}}),
+        onTap: ()=>this.tapItem(it.id)};
+    };
+    const cats = [];
+    this.SHOP.forEach(c=>{
+      const rows = c.items.filter(i=>s.hidden.indexOf(i.id)<0 && this.itemState(i.id)!=='done').map(mkRow);
+      if(rows.length) cats.push({cat:c.cat, icon:c.icon, count:rows.length+'', items:rows});
+    });
+    const extras = s.extraItems.filter(i=>this.itemState(i.id)!=='done').map(i=>mkRow(Object.assign({}, i, {extra:true, always:true})));
+    if(extras.length) cats.push({cat:'Añadidos', icon:'✍️', count:extras.length+'', items:extras});
+    const bought = items.filter(i=>this.itemState(i.id)==='done').map(mkRow);
+
+    const week = [];
+    for(let i=0;i<7;i++){
+      const slots = ['comida','cena'].map(k=>{
+        const id = this.slotDish(k, i);
+        const d = this.dish(id);
+        const st = this.stat(k, i);
+        const miss = (d && !d.made ? d.ing : []).filter(g=>this.itemState(g)==='buy');
+        let note = '';
+        if(!d) note = 'Sin plan · pulsa para elegir';
+        else if(d.made) note = '🏠 Nos lo hacen · no hay que comprar nada';
+        else if(!d.ing.length) note = '';
+        else note = miss.length ? '⚠️ Faltan '+miss.length+' de '+d.ing.length+' ingredientes' : '✅ Tenemos todo';
+        return {label: k==='comida' ? '🍽️ Comida' : '🌙 Cena', full:this.dishFull(id),
+          chips:this.chipsFor(k, i), note:note,
+          deco: (st==='skip'||st==='moved') ? 'line-through' : 'none',
+          dim: (st==='done'||st==='skip'||st==='moved') ? '.55' : '1',
+          onOptions: ()=>this.setState({sheet:{kind: d ? 'meal' : 'lib', slot:k, day:i}})};
+      });
+      week.push({name:this.DAYS[i].toUpperCase(), summary:this.dishFull(this.slotDish('comida', i)),
+        tag: i===todayIdx ? 'HOY' : '', open:s.openDay===i,
+        bg: i===todayIdx ? 'hsl(var(--brand)/.07)' : 'hsl(var(--background))',
+        border: i===todayIdx ? 'hsl(var(--brand)/.5)' : 'hsl(var(--border))',
+        chevron: s.openDay===i ? '▲' : '▼',
+        slots: slots,
+        onToggle: ()=>this.setState(st2=>({openDay: st2.openDay===i ? null : i})),
+        onOpenDay: ()=>this.setState({view:'hoy', offset: i - todayIdx, secondaryOpen:false})});
+    }
+
+    const todayTasks = this.tasksForDay(todayIdx).map(t=>this.taskRow(t.key, t.label, t.note, !!s.tasks[t.key]))
+      .concat(s.extraTasks.map(t=>this.taskRow('x-'+t.id, t.label, 'Añadida por vosotros', !!s.tasks['x-'+t.id], ()=>this.removeTask(t.id))));
+    const rest = [];
+    for(let i=todayIdx+1;i<7;i++){
+      const tasks = this.tasksForDay(i).map(t=>this.taskRow(t.key, t.label, t.note, !!s.tasks[t.key]));
+      if(tasks.length) rest.push({day:this.DAYS[i], tasks:tasks});
+    }
+    const pendToday = todayTasks.filter(t=>!t.done).length;
+
+    const a = this.analyze();
+    const tone = (good, mid)=> good ? 'hsl(var(--brand))' : mid ? 'hsl(var(--accent))' : 'hsl(240 6% 70%)';
+    const vegRatio = a.total ? a.verdura/a.total : 0;
+    const varRatio = a.total ? a.variedad/a.total : 0;
+    const metrics = [
+      {icon:'🐟', name:'Pescado', value:a.pescado+' / 3', dot:tone(a.pescado>=2, a.pescado===1), bg:'hsl(var(--background))'},
+      {icon:'🫘', name:'Legumbres', value:a.legumbres+(a.legumbres===1?' vez':' veces'), dot:tone(a.legumbres>=2, a.legumbres===1), bg:'hsl(var(--background))'},
+      {icon:'🥬', name:'Verduras', value: vegRatio>=.7 ? 'Muy bien' : vegRatio>=.5 ? 'Bien' : 'Mejorable', dot:tone(vegRatio>=.7, vegRatio>=.5), bg:'hsl(var(--background))'},
+      {icon:'🍎', name:'Fruta', value:'A diario', dot:tone(true, false), bg:'hsl(var(--background))'},
+      {icon:'🍗', name:'Carne', value:a.carne+(a.carne===1?' vez':' veces'), dot:tone(a.carne<=4, a.carne<=5), bg:'hsl(var(--background))'},
+      {icon:'🥚', name:'Huevos', value:a.huevos+(a.huevos===1?' vez':' veces'), dot:tone(a.huevos>=1, true), bg:'hsl(var(--background))'},
+      {icon:'🥩', name:'Proteína', value:a.proteina+' de '+a.total, dot:tone(a.proteina>=a.total*.7, a.proteina>=a.total*.5), bg:'hsl(var(--background))'},
+      {icon:'✨', name:'Variedad', value: varRatio>=.7 ? 'Muy buena' : varRatio>=.5 ? 'Buena' : 'Repetitiva', dot:tone(varRatio>=.7, varRatio>=.5), bg:'hsl(var(--background))'}
+    ];
+    const bars = [
+      {name:'Proteína', label:a.proteina+' platos', width: (a.total? Math.round(a.proteina*100/a.total):0)+'%', color:'hsl(var(--brand))'},
+      {name:'Vegetales', label:a.verdura+' platos', width: (a.total? Math.round(a.verdura*100/a.total):0)+'%', color:'hsl(var(--accent))'},
+      {name:'Hidratos', label:a.hidratos+' platos', width: (a.total? Math.round(a.hidratos*100/a.total):0)+'%', color:'hsl(240 6% 76%)'}
+    ];
+    const tips = [];
+    if(a.pescado < 2) tips.push({text:'Esta semana hay '+a.pescado+' comida'+(a.pescado===1?'':'s')+' con pescado. Cambiar una cena por rosada o atún os acercaría a las 2-3 habituales.'});
+    if(a.legumbres === 0) tips.push({text:'Aún no hay legumbres esta semana. El puchero o las lentejas encajan bien en cualquier comida.'});
+    if(a.pollo >= 4) tips.push({text:'Ya hay bastante pollo. Podríais cambiar una de las cenas de pollo por pescado.'});
+    if(vegRatio < .5) tips.push({text:'Podría venir bien añadir verdura a alguna de las próximas comidas.'});
+    if(varRatio < .5) tips.push({text:'Se repiten bastantes platos. Sustituir uno por algo distinto da más variedad.'});
+
+    const realRows = [];
+    ['comida','cena'].forEach(k=>{
+      for(let d=0;d<7;d++){
+        const key = k+'-'+d;
+        if(this.stat(k,d)!=='done') continue;
+        const planned = this.BASE[k][d];
+        const eatenId = s.log[key] || this.slotDish(k,d);
+        if(planned !== eatenId) realRows.push({day:this.DAYS[d]+' · '+(k==='comida'?'comida':'cena'),
+          planned:'Planificado: '+this.dishFull(planned), eaten:'Comido: '+this.dishFull(eatenId)});
+      }
+    });
+
+    const sheet = s.sheet;
+    let sheetTitle = '', sheetSub = '', actions = [];
+    const grey = 'hsl(var(--border))';
+    const mk = (label, note, onClick, accent)=>({label:label, note:note||'', onClick:onClick,
+      color:'hsl(var(--foreground))', bg: accent ? this.LILA_BG : 'hsl(var(--background))', bd: accent ? this.LILA_BD : grey});
+    if(sheet){
+      const sl = sheet.slot, dy = sheet.day;
+      const id = this.slotDish(sl, dy);
+      const d = this.dish(id);
+      const st = this.stat(sl, dy);
+      if(sheet.kind==='meal'){
+        sheetTitle = (sl==='comida' ? 'Comida' : 'Cena') + ' · ' + this.DAYS[dy];
+        sheetSub = this.dishFull(id);
+        actions.push(mk(st==='done' ? 'Desmarcar' : (sl==='comida' ? '✓ Marcar como comido' : '✓ Marcar como cenado'),
+          st==='done' ? 'Vuelve a estar pendiente' : 'La tarjeta queda completada', ()=>this.markEaten(sl, dy)));
+        actions.push(mk('↪ No lo hemos comido', 'Moverlo, sustituirlo o saltarlo', ()=>this.setState({sheet:{kind:'move', slot:sl, day:dy}}), true));
+        actions.push(mk('📝 Hemos comido otra cosa', sl==='comida' ? 'Lo anotamos y ajustamos la cena' : 'Lo anotamos tal cual', ()=>this.setState({sheet:{kind:'real', slot:sl, day:dy}})));
+        if(d && d.alt) actions.push(mk('🔁 Cambiar por la alternativa', this.dishFull(d.alt), ()=>this.substitute(sl, dy, d.alt)));
+        actions.push(mk('⇅ Intercambiar comida y cena', 'Sólo en este día', ()=>this.swapDay(dy)));
+        if(sl==='cena') actions.push(mk(s.locked[sl+'-'+dy] ? '🔓 Quitar la fijación' : '🔒 Fijar esta cena',
+          s.locked[sl+'-'+dy] ? 'Volveremos a ajustarla si cambia la comida' : 'No la cambiaremos automáticamente', ()=>this.toggleLock(sl, dy)));
+        if(sl==='comida') actions.push(mk('✨ Reajustar la cena de hoy', 'Buscamos la cena que mejor complementa', ()=>this.forceRebalance(dy)));
+      } else if(sheet.kind==='move'){
+        sheetTitle = 'No hemos comido esto';
+        sheetSub = this.dishFull(id) + ' · ' + this.DAYS[dy];
+        if(dy<6) actions.push(mk('Comerlo mañana', 'El resto de la semana se corre un día', ()=>this.moveSlot(sl, dy, dy+1), true));
+        actions.push(mk('Elegir otro día', 'Tú eliges el día', ()=>this.setState({sheet:{kind:'day', slot:sl, day:dy}})));
+        actions.push(mk('Sustituirlo por otra comida', 'Se queda en este día', ()=>this.setState({sheet:{kind:'lib', slot:sl, day:dy}})));
+        actions.push(mk('Saltarlo esta semana', 'No volverá a aparecer', ()=>this.skipSlot(sl, dy)));
+        actions.push(mk('He comido otra cosa', 'Lo anotamos y ajustamos la cena', ()=>this.setState({sheet:{kind:'real', slot:sl, day:dy}})));
+      } else if(sheet.kind==='day'){
+        sheetTitle = 'Pasar a otro día';
+        sheetSub = this.dishFull(id) + ' · ahora en ' + this.DAYS[dy].toLowerCase();
+        for(let i=0;i<7;i++){
+          if(i===dy) continue;
+          const there = this.slotDish(sl, i);
+          actions.push(mk(this.DAYS[i], there ? 'Ahora: ' + this.dishFull(there) : 'Libre', ()=>this.moveSlot(sl, dy, i)));
+        }
+      } else if(sheet.kind==='lib' || sheet.kind==='real'){
+        const real = sheet.kind==='real';
+        sheetTitle = real ? '¿Qué habéis comido?' : (d ? 'Sustituir plato' : 'Elegir plato');
+        sheetSub = real ? 'Lo analizamos y recalculamos el día' : (sl==='comida' ? 'Comida' : 'Cena') + ' del ' + this.DAYS[dy].toLowerCase();
+        this.libFor(sl, dy, real).forEach(o=>{ actions.push(mk(o.name, o.perfil, ()=>this.changeMeal(sl, dy, o.id, real))); });
+      } else if(sheet.kind==='place'){
+        sheetTitle = 'Buscar hueco';
+        sheetSub = this.dishFull(sheet.id);
+        for(let i=0;i<7;i++){
+          const there = this.slotDish(sheet.slot, i);
+          actions.push(mk(this.DAYS[i], there ? 'Ahora: ' + this.dishFull(there) : 'Libre', ()=>this.placeOrphan(sheet.id, sheet.slot, i)));
+        }
+      }
+    }
+
+    const dlg = s.dialog;
+    let dialog = {open:false, title:'', body:'', actions:[], onCancel: ()=>this.setState({dialog:null})};
+    if(dlg && dlg.kind==='del'){
+      dialog = {open:true, title:'¿Quitar de la compra?', body:dlg.name + ' ya no aparece en el menú de esta semana. Nunca lo borramos solos.',
+        actions:[{label:'Eliminar de la compra', bg:'hsl(var(--accent)/.3)', bd:this.LILA_BD, fg:this.LILA_INK, onClick: ()=>this.hideItem(dlg.id)},
+          {label:'Mantener en la lista', bg:'hsl(var(--background))', bd:'hsl(var(--border))', fg:'hsl(var(--foreground))', onClick: ()=>this.setState({dialog:null})}],
+        onCancel: ()=>this.setState({dialog:null})};
+    } else if(dlg && dlg.kind==='locked'){
+      dialog = {open:true, title:'Esta cena está fijada', body:'Has cambiado la comida del ' + this.DAYS[dlg.day].toLowerCase() + '. ¿Mantenemos la cena tal cual o reajustamos el día?',
+        actions:[
+          {label:'Mantener la cena', bg:'hsl(var(--background))', bd:'hsl(var(--border))', fg:'hsl(var(--foreground))', onClick: ()=>this.setState({dialog:null})},
+          {label:'Reajustar el día', bg:'hsl(var(--brand))', bd:'hsl(var(--brand))', fg:'hsl(var(--brand-foreground))', onClick: ()=>this.forceRebalance(dlg.day)}],
+        onCancel: ()=>this.setState({dialog:null})};
+    } else if(dlg && dlg.kind==='new'){
+      dialog = {open:true, title:'¿Nueva semana?', body:'¿Quieres guardar esta semana en el historial antes de empezar de cero?',
+        actions:[
+          {label:'Guardar y empezar nueva semana', bg:'hsl(var(--brand))', bd:'hsl(var(--brand))', fg:'hsl(var(--brand-foreground))', onClick: ()=>this.newWeek(true)},
+          {label:'Empezar sin guardar', bg:'hsl(var(--background))', bd:'hsl(var(--border))', fg:'hsl(var(--muted-foreground))', onClick: ()=>this.newWeek(false)}],
+        onCancel: ()=>this.setState({dialog:null})};
+    }
+
+    const navFg = (v)=> s.view===v ? this.TEAL_INK : 'hsl(var(--muted-foreground))';
+    const navBg = (v)=> s.view===v ? 'hsl(var(--brand)/.22)' : 'transparent';
+
+    return {
+      isHoy: s.view==='hoy', isSemana: s.view==='semana', isCompra: s.view==='compra',
+      isPrep: s.view==='preparar', isBalance: s.view==='equilibrio',
+      showBreakfast: showBreakfast,
+      dateEyebrow: s.offset===0 ? 'Hoy' : s.offset===1 ? 'Mañana' : s.offset===-1 ? 'Ayer' : 'Otro día',
+      dateMain: this.DAYS[di] + ' ' + sel.getDate() + ' de ' + this.MONTHS[sel.getMonth()],
+      notToday: s.offset!==0,
+      prevDay: ()=>this.setState(st=>({offset:st.offset-1, secondaryOpen:false})),
+      nextDay: ()=>this.setState(st=>({offset:st.offset+1, secondaryOpen:false})),
+      goToday: ()=>this.setState({offset:0, secondaryOpen:false}),
+      primary: this.card(pSlot, di, isToday),
+      secondary: this.card(sSlot, di, isToday),
+      secondaryOpen: s.secondaryOpen,
+      secondaryChevron: s.secondaryOpen ? '▲' : '▼',
+      toggleSecondary: ()=>this.setState(st=>({secondaryOpen:!st.secondaryOpen})),
+      week: week,
+      showOriginal: s.showOriginal,
+      originalLabel: s.showOriginal ? 'Ocultar plan original' : 'Ver plan original',
+      toggleOriginal: ()=>this.setState(st=>({showOriginal:!st.showOriginal})),
+      originalPlan: this.DAYS.map((n, i)=>({day:n, text:this.dishFull(this.BASE.comida[i]) + ' · ' + this.dishFull(this.BASE.cena[i])})),
+      orphans: s.orphans.map(id=>({name:this.dishFull(id),
+        onPlace: ()=>this.setState({sheet:{kind:'place', id:id, slot:this.dish(id).kind==='cena' ? 'cena' : 'comida'}})})),
+      hasOrphans: s.orphans.length>0,
+      shop: {pct:pct, countLabel: ready+' de '+items.length+' productos listos', cats:cats,
+        bought:bought, hasBought: bought.length>0, boughtCount: bought.length+'',
+        hint: 'Pulsa un producto para cambiarlo: por comprar → ✅ comprado → 🏠 ya lo tenemos.',
+        newItem: s.newItem,
+        onNewItem: (e)=>this.setState({newItem:e.target.value}),
+        onNewItemKey: (e)=>{ if(e.key==='Enter') this.addItem(); },
+        onAdd: ()=>this.addItem()},
+      prep: {headline: pendToday===0 ? 'Todo listo por hoy' : (pendToday===1 ? '1 cosa que preparar' : pendToday+' cosas que preparar'),
+        today: todayTasks, todayEmpty: todayTasks.length===0, rest: rest, hasRest: rest.length>0,
+        newTask: s.newTask,
+        onNewTask: (e)=>this.setState({newTask:e.target.value}),
+        onNewTaskKey: (e)=>{ if(e.key==='Enter') this.addTask(); },
+        onAdd: ()=>this.addTask()},
+      bal: {metrics:metrics, bars:bars, tips:tips.slice(0,3), noTips: tips.length===0,
+        basis: a.done ? ('Con lo que ya habéis comido ('+a.done+') y lo que queda planeado.') : 'Con el plan actual de la semana.',
+        real: realRows, hasReal: realRows.length>0,
+        history: s.history.slice().reverse(), hasHistory: s.history.length>0},
+      askNewWeek: ()=>this.setState({dialog:{kind:'new'}}),
+      restoreBase: ()=>this.setState(st=>({undo:this.snap(),
+        plan:{comida:this.BASE.comida.slice(), cena:this.BASE.cena.slice()},
+        status:{}, moved:{}, subs:{}, log:{}, orphans:[], satChoice:null,
+        banner:{title:'↻ Menú base restaurado', lines:[{text:'El plan vuelve a ser exactamente vuestro menú oficial. La compra y las tareas no se han tocado.'}], change:null}})),
+      nav: {hoyFg:navFg('hoy'), hoyBg:navBg('hoy'), semanaFg:navFg('semana'), semanaBg:navBg('semana'),
+        compraFg:navFg('compra'), compraBg:navBg('compra'), prepFg:navFg('preparar'), prepBg:navBg('preparar'),
+        balFg:navFg('equilibrio'), balBg:navBg('equilibrio'), pend: pend+'', hasPend: pend>0},
+      goHoy: ()=>this.setState({view:'hoy', focus:[]}),
+      goSemana: ()=>this.setState({view:'semana', focus:[]}),
+      goCompra: ()=>this.setState({view:'compra'}),
+      goPrep: ()=>this.setState({view:'preparar', focus:[]}),
+      goBalance: ()=>this.setState({view:'equilibrio', focus:[]}),
+      sheetOpen: !!s.sheet,
+      sheet: {title:sheetTitle, subtitle:sheetSub, actions:actions},
+      closeSheet: ()=>this.setState({sheet:null}),
+      dialog: dialog,
+      banner: {show: !!s.banner, title: s.banner ? s.banner.title : '', lines: s.banner ? s.banner.lines : [],
+        hasChange: !!(s.banner && s.banner.change),
+        onChange: ()=>{ const c = s.banner && s.banner.change; if(c) this.setState({banner:null, sheet:{kind:'lib', slot:c.slot, day:c.day}}); },
+        onClose: ()=>this.setState({banner:null}), onUndo: ()=>this.undo()}
+    };
+  }
+}
+</script>
+</body>
+</html>
